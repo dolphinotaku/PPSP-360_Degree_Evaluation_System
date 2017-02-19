@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- TemplateBeginEditable name="doctitle" -->
+<title>Develop |</title>
+<!-- TemplateEndEditable -->
+<link rel="icon" type="image/png" href="../images/logo48.png" />
+<link rel="stylesheet" type="text/css" href="../css/body.css">
+<link rel="stylesheet" type="text/css" href="../css/chrome.css">
+<link rel="stylesheet" type="text/css" href="../third-party/w3.css/w3.2.64.css">
+<link rel="stylesheet" type="text/css" href="../third-party/font-awesome/font-awesome-4.5.0/css/font-awesome.min.css">
+<script type="text/javascript" src="../third-party/jQuery/jquery-2.2.1.min.js"></script>
+<script type="text/javascript" src="../third-party/angularjs/angular-1.5.0/angular.min.js"></script>
+<script type="text/javascript" src="../third-party/angularjs/angular-1.5.0/angular-animate.min.js"></script>
+<script type="text/javascript" src="../third-party/angularjs/angular-1.5.0/angular-route.min.js"></script>
+<script type="text/javascript" src="../third-party/angularjs/angular-1.5.0/angular-touch.min.js"></script>
+<script type="text/javascript" src="../third-party/angularjs/angular-1.5.0/angular-cookies.min.js"></script>
+<!-- TemplateBeginEditable name="head" -->
+<script>
+// jQuery
+$(function() {
+	
+});
+</script>
+<script>
+//"use strict";
+//app.controller('testCtrl', ['$scope', function ($scope, $rootScope) {
+//}]);
+</script>
+<!-- TemplateEndEditable -->
+</head>
+
+<body ng-app="myApp">
+<div id="top">
+  <div id="topBar"> <!-- TemplateBeginEditable name="topbar" --> <!-- TemplateEndEditable --> </div>
+</div>
+<!-- Header Navbar start -->
+<!-- TemplateBeginEditable name="header" -->
+<ul class="w3-navbar w3-theme w3-top w3-left-align w3-large w3-border w3-light-grey" style="z-index:4;">
+  <li class="w3-opennav w3-right w3-hide-large">
+    <a class="w3-hover-white w3-large w3-theme-l1" href="javascript:void(0)" onclick="w3_open()"><i class="fa fa-bars"></i></a>
+  </li>
+  <li><a href="#" class="w3-left w3-theme-l1">Logo</a></li>
+  <li class="w3-hide-small"><a href="#" class="w3-hover-white">About</a></li>
+  <li class="w3-hide-small"><a href="#" class="w3-hover-white">Values</a></li>
+  <li class="w3-hide-small"><a href="#" class="w3-hover-white">News</a></li>
+  <li class="w3-hide-small"><a href="#" class="w3-hover-white">Contact</a></li>
+  <li class="w3-hide-medium w3-hide-small"><a href="#" class="w3-hover-white">Clients</a></li>
+  <li class="w3-hide-medium w3-hide-small"><a href="#" class="w3-hover-white">Partners</a></li>
+</ul>
+<!-- TemplateEndEditable -->
+<!-- Header Navbar end -->
+<div class="container">
+<!-- TemplateBeginEditable name="page-header" -->
+<h1 class="page-header">Heading <small>Subheading</small></h1>
+<!-- TemplateEndEditable -->
+<!-- site position start --> 
+<!-- TemplateBeginEditable name="position" -->
+<div id="site_position">
+    <ol class="breadcrumb">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="#">Some where</a></li>
+    </ol>
+</div>
+<!-- TemplateEndEditable --> 
+</div>
+<!-- site position end --> 
+<div class="container">
+<!-- TemplateBeginEditable name="intro" -->
+place your introduction here
+<!-- TemplateEndEditable -->
+</div>
+<div class="container"> <!-- TemplateBeginEditable name="content" -->
+  <div ng-controller="testCtrl">place your content here</div>
+  <!-- TemplateEndEditable -->
+  <div id="lasted_update"></div>
+</div>
+<div id="footer">
+  <footer class="text-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12">
+            <p>Copyright © MyCompany. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+  </footer>
+</div>
+</body>
+</html>

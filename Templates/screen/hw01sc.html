@@ -1,0 +1,20 @@
+<div class="table-responsive">
+  <table class="table table-hover">
+    <thead>
+	  <tr>
+	    <th>Spell Class ID</th>
+	    <th>Name</th>
+	    <th>Description</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr ng-repeat="spellClassRow in pageviewCtrl.ngModel"
+			ng-click="PointedToRecord(spellClassRow, $event, this)"
+			ng-dblclick="SelectedToRecord(spellClassRow, $event, this)">
+	    <th>{{spellClassRow.spellClassID}}</th>
+	    <th>{{spellClassRow.name}}</th>
+	    <th>{{spellClassRow.description}}</th>
+	  </tr>
+	</tbody>
+  </table>
+</div>

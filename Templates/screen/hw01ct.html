@@ -1,0 +1,20 @@
+<div class="table-responsive">
+  <table class="table table-hover">
+    <thead>
+	  <tr>
+	    <th>Type Code</th>
+	    <th>Category</th>
+	    <th>Description</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr ng-repeat="typeRow in pageviewCtrl.ngModel"
+			ng-click="PointedToRecord(typeRow, $event, this)"
+			ng-dblclick="SelectedToRecord(typeRow, $event, this)">
+	    <th>{{typeRow.cardTypeID}}</th>
+	    <th>{{typeRow.category}}</th>
+	    <th>{{typeRow.description}}</th>
+	  </tr>
+	</tbody>
+  </table>
+</div>

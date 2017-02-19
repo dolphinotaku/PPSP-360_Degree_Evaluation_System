@@ -1,0 +1,403 @@
+<!doctype html>
+<html><!-- InstanceBegin template="/Templates/basic-bootstrap.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Develop |</title>
+<!-- InstanceEndEditable -->
+<link rel="icon" type="image/png" href="images/logo48.png" />
+<link rel="stylesheet" type="text/css" href="css/body.css">
+<link rel="stylesheet" type="text/css" href="css/chrome.css">
+<link rel="stylesheet" type="text/css" href="third-party/bootstrap/bootstrap-3.3.6-dist/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="third-party/font-awesome/font-awesome-4.5.0/css/font-awesome.min.css">
+<script type="text/javascript" src="third-party/jQuery/jquery-2.2.1.min.js"></script>
+<script type="text/javascript" src="third-party/jQuery/jquery.cookie-1.4.1.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular-animate.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular-route.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular-touch.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular-cookies.min.js"></script>
+<script type="text/javascript" src="third-party/bootstrap/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+<script type="text/javascript" src="js/config.js"></script>
+<script type="text/javascript" src="js/directive.js"></script>
+<script type="text/javascript" src="js/service.js"></script>
+<script type="text/javascript" src="third-party/angularjs-ui/UI-Bootstrap/ui-bootstrap-tpls-1.3.2.js"></script>
+<script type="text/javascript" src="third-party/Blob.js-master/Blob.js"></script>
+<script type="text/javascript" src="third-party/FileSaver.js/FileSaver.js-1.3.2/FileSaver.min.js"></script>
+<script src="third-party/ng-file-upload-12.2.12/demo/src/main/webapp/js/ng-file-upload-shim.js"></script>
+<script src="third-party/ng-file-upload-12.2.12/demo/src/main/webapp/js/ng-file-upload.js"></script>
+<!-- InstanceBeginEditable name="head" -->
+<script>
+// jQuery
+$(function() {
+	
+});
+</script>
+<script>
+"use strict";
+app.controller('createPositionController', ['$scope', 'Security', function ($scope, Security, $rootScope) {
+	$scope.directiveScopeDict = {};
+	$scope.directiveCtrlDict = {};
+    
+	function Initialize(){
+		var entryForm = {};
+		
+		$scope.entryForm = entryForm;
+	}
+	Initialize();
+	
+	$scope.EventListener = function(scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried EventListener()");
+        var tagName = iElement[0].tagName.toLowerCase();
+		var prgmID = scope.programId;
+        var scopeID = scope.$id;
+        var hashID = scopeID + '_' + tagName + '_' + prgmID;
+        
+		if($scope.directiveScopeDict[hashID] == null || typeof($scope.directiveScopeDict[hashID]) == "undefined"){
+		  $scope.directiveScopeDict[hashID] = scope;
+		  $scope.directiveCtrlDict[hashID] = controller;
+		}
+		
+		//http://api.jquery.com/Types/#Event
+		//The standard events in the Document Object Model are:
+		// blur, focus, load, resize, scroll, unload, beforeunload,
+		// click, dblclick, mousedown, mouseup, mousemove, mouseover, mouseout, mouseenter, mouseleave,
+		// change, select, submit, keydown, keypress, and keyup.
+		iElement.ready(function() {
+			
+		})
+	}
+	
+	$scope.SetDefaultValue = function(scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried SetDefaultValue()");
+		
+	}
+	
+	$scope.StatusChange = function(fieldName, newValue, newObj, scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried StatusChange()");
+		
+//		if(fieldName == "FirstName")
+//			newObj.FirstName = newObj.FirstName.toUpperCase(); 
+//		
+//		if(fieldName == "LastName")
+//			newObj.LastName = newObj.LastName.toUpperCase(); 
+	}
+	
+	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried ValidateBuffer()");
+
+        return true;
+	}
+    
+    
+    $scope.CustomSelectedToRecord = function(sRecord, rowScope, scope, iElement, controller){
+        console.log("<"+iElement[0].tagName+">" +" Directive overried CustomPointedToRecord()");
+
+        var tagName = iElement[0].tagName.toLowerCase();
+        var prgmID = scope.programId.toLowerCase();
+        var scopeID = scope.$id;
+        var hashID = scopeID + '_' + tagName + '_' + prgmID;
+        
+        if(typeof $scope.directiveScopeDict[hashID].SetNgModel == "function")
+            CustomSelectedToRecordUnderEditbox(sRecord, rowScope, scope, iElement, controller);
+    }
+    
+    function CustomSelectedToRecordUnderEditbox(sRecord, rowScope, scope, iElement, controller){
+        var tagName = iElement[0].tagName.toLowerCase();
+        var prgmID = scope.programId.toLowerCase();
+        var scopeID = scope.$id;
+        var hashID = scopeID + '_' + tagName + '_' + prgmID;
+        
+        if(prgmID == "ew01dp"){
+          $scope.directiveScopeDict[hashID].SetNgModel(sRecord)
+          $scope.amendForm.DepartmentCode = sRecord.DepartmentCode;
+          $scope.deptEditBox = sRecord;
+        }
+
+        if(prgmID == "ew01sg"){
+          $scope.directiveScopeDict[hashID].SetNgModel(sRecord)
+          $scope.amendForm.StaffGradeCode = sRecord.StaffGradeCode;
+          $scope.staffGradeEditBox = sRecord;
+        }
+
+        if(prgmID == "ew01ps"){
+          $scope.directiveScopeDict[hashID].SetNgModel(sRecord)
+          $scope.amendForm.PositionCode = sRecord.PositionCode;
+          $scope.positionEditBox = sRecord;
+        }
+
+        if(prgmID == "ew01sf"){
+          $scope.directiveScopeDict[hashID].SetNgModel(sRecord)
+          $scope.amendForm.SupervisorID = sRecord.StaffID;
+          $scope.supervisorEditBox = sRecord;
+        }
+    }
+
+    $scope.CustomSubmitDataResult = function(responseObj, httpStatusCode, scope, element, attrs, ctrl){
+        var prgmID = scope.programId;
+        if(prgmID == "es01sg"){
+          $scope.directiveScopeDict["ew01sg"].ClearNRefreshData();
+        }
+    }
+}]);
+</script>
+<!-- InstanceEndEditable -->
+</head>
+
+<body ng-app="myApp">
+<div id="top">
+  <div id="topBar"> <!-- InstanceBeginEditable name="topbar" --> <!-- InstanceEndEditable --> </div>
+</div>
+<!-- header start -->
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container">
+  <!-- InstanceBeginEditable name="header" -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">360° Evaluation System</a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav" id="bs-example-navbar-collapse-1">
+        <li><a href="../main-menu.html">Home <span class="fa fa-home fa-lg"></span></a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Evaluation <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">Evaluation Master</li>
+            <li><a href="create-evaluation.html">Create</a></li>
+            <li><a href="amend-evaluation.html">Amend</a></li>
+            <li><a href="delete-evaluation.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Activate Evaluation</li>
+            <li><a href="process-gen-eva-proposal.html">Generate Evaluation Proposal</a></li>
+            <li><a href="create-evaluation-entry.html">360 Degree Evaluation Entry</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Report</li>
+            <li><a href="print-indiviudal-report">Indiviudal Report(Self)</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Staff <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">Staff Profile</li>
+            <li><a href="create-staff-profile.html">Create</a></li>
+            <li><a href="amend-staff-profile.html">Amend</a></li>
+            <li><a href="delete-staff-profile.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Utility</li>
+            <li><a href="import-export-master.html">Master Import/Export</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Master <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">Utility</li>
+            <li><a href="import-export-master.html">Master Import/Export</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Vendor</li>
+            <li><a href="create-vendor.html">Create</a></li>
+            <li><a href="amend-vendor.html">Amend</a></li>
+            <li><a href="delete-vendor.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Department</li>
+            <li><a href="create-department.html">Create</a></li>
+            <li><a href="amend-department.html">Amend</a></li>
+            <li><a href="delete-department.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Staff Grade</li>
+            <li><a href="create-staffgrade.html">Create</a></li>
+            <li><a href="amend-staffgrade.html">Amend</a></li>
+            <li><a href="delete-staffgrade.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Position</li>
+            <li><a href="create-position.html">Create</a></li>
+            <li><a href="amend-position.html">Amend</a></li>
+            <li><a href="delete-position.html">Delete</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="../personal-profile.html">Personal profile <span class="fa fa-user fa-lg"></span></a></li>
+        <li><a href="#" logout>Logout <span class="fa fa-sign-out fa-lg"></span></a></li>
+      </ul>
+    </div>
+  <!-- InstanceEndEditable -->
+  </div>
+</nav>
+<!-- header end -->
+<div class="container">
+<!-- InstanceBeginEditable name="page-header" -->
+<h1 class="page-header">Create Staff Profile</h1>
+<!-- InstanceEndEditable -->
+<!-- site position start --> 
+<!-- InstanceBeginEditable name="position" -->
+<div id="site_position">
+    <ol class="breadcrumb">
+      <li><a href="main-menu.html">Home</a></li>
+    </ol>
+</div>
+<!-- InstanceEndEditable --> 
+</div>
+<!-- site position end --> 
+<div class="container">
+<!-- InstanceBeginEditable name="intro" -->
+<div ng-controller="createPositionController as createDeptCtrl" style="max-width: 850px;">
+        <div class="panel panel-default">
+          <div class="panel-heading">Process Message</div>
+          <div class="panel-body">
+            <message ng-model="processMsg" auto-close>
+              <div class="well well-sm" ng-if="msgCtrl.ngModel.length > 0">
+                <div ng-repeat="dspMsg in msgCtrl.ngModel track by $index" ng-bind="dspMsg"></div>
+              </div>
+            </message>
+          </div>
+        </div>
+	<h3>Create Staff Profile</h3>
+    <pageview ng-model="deptDataList" program-id="ew01sf">
+        <screen></screen>
+    </pageview>
+    <entry ng-model="amendForm" program-id="ee01sf" edit-mode="create">
+      <form ng-submit="SubmitData()">
+        <fieldset>
+          <div class="form-group">
+            <label for="inputDeptCode">Staff ID</label>
+            <input type="text" class="form-control" id="inputDeptCode" ng-model="amendForm.StaffID">
+          </div>
+          <div class="form-group">
+            <label for="inputFN">First Name</label>
+            <input type="text" class="form-control" id="inputFN" ng-model="amendForm.FirstName">
+          </div>
+          <div class="form-group">
+            <label for="inputLN">LastName</label>
+            <input type="text" class="form-control" id="inputLN" ng-model="amendForm.LastName">
+          </div>
+          <div class="form-group">
+            <editbox ng-model="deptEditBox" program-id="ew01dp">
+              <div class="form-inline">
+                <label for="card_cardID">Department Code</label>
+                <div class="input-group">
+                  <input class="form-control" type="text" id="card_cardID" ng-model="amendForm.DepartmentCode" readonly>
+                  <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="OpenPageView()"><i class="fa fa-bars"></i></button></span>
+                </div>
+                <div class="form-group">
+                  <label for="dept_desc">Description</label>
+                  <input type="text" class="form-control input-sm" id="dept_desc" ng-model="deptEditBox.Description" readonly>
+                </div>
+              </div>
+            </editbox>
+          </div>
+          <div class="form-group">
+            <editbox ng-model="staffGradeEditBox" program-id="ew01sg">
+              <div class="form-inline">
+                <label for="card_cardID">Staff Grade Code</label>
+                <div class="input-group">
+                  <input class="form-control" type="text" id="card_cardID" ng-model="amendForm.StaffGradeCode" readonly>
+                  <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="OpenPageView()"><i class="fa fa-bars"></i></button></span>
+                </div>
+                <div class="form-group">
+                  <label for="sfg_desc">Description</label>
+                  <input type="text" class="form-control input-sm" id="sfg_desc" ng-model="staffGradeEditBox.Description" readonly>
+                </div>
+              </div>
+            </editbox>
+          </div>
+          <div class="form-group">
+            <editbox ng-model="positionEditBox" program-id="ew01ps">
+              <div class="form-inline">
+                <label for="card_cardID">Position Code</label>
+                <div class="input-group">
+                  <input class="form-control" type="text" id="card_cardID" ng-model="amendForm.PositionCode" readonly>
+                  <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="OpenPageView()"><i class="fa fa-bars"></i></button></span>
+                </div>
+                <div class="form-group">
+                  <label for="pos_desc">Description</label>
+                  <input type="text" class="form-control input-sm" id="pos_desc" ng-model="positionEditBox.Description" readonly>
+                </div>
+              </div>
+            </editbox>
+          </div>
+          <div class="form-group">
+            <editbox ng-model="supervisorEditBox" program-id="ew01sf">
+              <div class="form-inline">
+                <label for="card_cardID">Supervisor ID</label>
+                <div class="input-group">
+                  <input class="form-control" type="text" id="card_cardID" ng-model="amendForm.SupervisorID" readonly>
+                  <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="OpenPageView()"><i class="fa fa-bars"></i></button></span>
+                </div>
+                <div class="form-group">
+                  <label for="sf_fn">First Name</label>
+                  <input type="text" class="form-control input-sm" id="sf_fn" ng-model="supervisorEditBox.FirstName" readonly>
+                </div>
+                <div class="form-group">
+                  <label for="sf_ln">Last Name</label>
+                  <input type="text" class="form-control input-sm" id="sf_ln" ng-model="supervisorEditBox.LastName" readonly>
+                </div>
+              </div>
+            </editbox>
+          </div>
+            
+          <div class="form-group">
+            <label for="inputEmployDate">EmploymentDate</label>
+            <input type="date" class="form-control" id="inputEmployDate" ng-model="amendForm.EmploymentDate">
+          </div>
+          <div class="form-group">
+            <label for="inputProbatDate">ProbationEndDate</label>
+            <input type="date" class="form-control" id="inputProbatDate" ng-model="amendForm.ProbationEndDate">
+          </div>
+          <div class="form-group">
+            <label for="inputEmployStatus">EmployStatus</label>
+            <input type="text" class="form-control" id="inputEmployStatus" ng-model="amendForm.EmployStatus">
+          </div>
+          <div class="form-group">
+            <label for="inputGender">Gender</label>
+            <input type="text" class="form-control" id="inputGender" ng-model="amendForm.Gender">
+          </div>
+          <div class="form-group">
+            <label for="inputBirthDay">BirthDay</label>
+            <input type="date" class="form-control" id="inputBirthDay" ng-model="amendForm.BirthDay">
+          </div>
+          <div class="form-group">
+            <label for="inputEmail">Email</label>
+            <input type="text" class="form-control" id="inputEmail" ng-model="amendForm.Email">
+          </div>
+          <div class="form-group">
+            <label for="inputTelNum">TelNum</label>
+            <input type="text" class="form-control" id="inputTelNum" ng-model="amendForm.TelNum">
+          </div>
+          <div class="form-group">
+            <label for="inputMobileNum">MobileNum</label>
+            <input type="text" class="form-control" id="inputMobileNum" ng-model="amendForm.MobileNum">
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-default">Create</button>
+          </div>
+        </fieldset>
+      </form>
+    </entry>
+</div>
+<!-- InstanceEndEditable -->
+</div>
+<div class="container" id="content"> <!-- InstanceBeginEditable name="content" -->
+  <div id="vendorItem"> </div>
+  <!-- InstanceEndEditable -->
+  <div id="lasted_update"></div>
+</div>
+<div id="footer">
+  <footer class="text-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12">
+            <p>Copyright © MyCompany. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+  </footer>
+</div>
+</body>
+<!-- InstanceEnd --></html>

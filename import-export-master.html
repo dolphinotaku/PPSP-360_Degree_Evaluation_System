@@ -1,0 +1,226 @@
+<!doctype html>
+<html><!-- InstanceBegin template="/Templates/basic-bootstrap.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Develop |</title>
+<!-- InstanceEndEditable -->
+<link rel="icon" type="image/png" href="images/logo48.png" />
+<link rel="stylesheet" type="text/css" href="css/body.css">
+<link rel="stylesheet" type="text/css" href="css/chrome.css">
+<link rel="stylesheet" type="text/css" href="third-party/bootstrap/bootstrap-3.3.6-dist/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="third-party/font-awesome/font-awesome-4.5.0/css/font-awesome.min.css">
+<script type="text/javascript" src="third-party/jQuery/jquery-2.2.1.min.js"></script>
+<script type="text/javascript" src="third-party/jQuery/jquery.cookie-1.4.1.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular-animate.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular-route.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular-touch.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular-cookies.min.js"></script>
+<script type="text/javascript" src="third-party/bootstrap/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+<script type="text/javascript" src="js/config.js"></script>
+<script type="text/javascript" src="js/directive.js"></script>
+<script type="text/javascript" src="js/service.js"></script>
+<script type="text/javascript" src="third-party/angularjs-ui/UI-Bootstrap/ui-bootstrap-tpls-1.3.2.js"></script>
+<script type="text/javascript" src="third-party/Blob.js-master/Blob.js"></script>
+<script type="text/javascript" src="third-party/FileSaver.js/FileSaver.js-1.3.2/FileSaver.min.js"></script>
+<script src="third-party/ng-file-upload-12.2.12/demo/src/main/webapp/js/ng-file-upload-shim.js"></script>
+<script src="third-party/ng-file-upload-12.2.12/demo/src/main/webapp/js/ng-file-upload.js"></script>
+<!-- InstanceBeginEditable name="head" -->
+<script>
+// jQuery
+$(function() {
+	
+});
+</script>
+<script>
+"use strict";
+app.run(function ($rootScope, $log, Security) {
+	console.log("app.run at local page");
+	//Security.GoToMenuIfSessionExists();
+	Security.RequiresAuthorization();
+});
+
+app.controller('createDepartmentController', ['$scope', 'Security', function ($scope, Security, $rootScope) {
+	function Initialize(){
+		var entryForm = {};
+		
+		$scope.imExModel = entryForm;
+    $scope.uploadFileInfo = {};
+	}
+	Initialize();
+	
+	$scope.EventListener = function(scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried EventListener()");
+		
+//		console.dir(scope);
+//		console.dir(iElement);
+//		console.dir(iAttrs);
+//		console.dir(controller);
+		
+		//http://api.jquery.com/Types/#Event
+		//The standard events in the Document Object Model are:
+		// blur, focus, load, resize, scroll, unload, beforeunload,
+		// click, dblclick, mousedown, mouseup, mousemove, mouseover, mouseout, mouseenter, mouseleave,
+		// change, select, submit, keydown, keypress, and keyup.
+		iElement.ready(function() {
+			
+		})
+	}
+	
+	$scope.SetDefaultValue = function(scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried SetDefaultValue()");
+		
+		controller.ngModel.nameJpn = "";
+		controller.ngModel.nameChi = "";
+		controller.ngModel.nameEng = "";
+		controller.ngModel.contentJpn = "";
+		controller.ngModel.contentChi = "";
+		controller.ngModel.contentEng = "";
+	}
+	
+	$scope.StatusChange = function(fieldName, newValue, newObj, scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried StatusChange()");
+//		console.log(fieldName);
+//		console.log(newValue);
+		
+		if(fieldName == "grade")
+			newObj.grade = newObj.grade.toUpperCase(); 
+	}
+	
+	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried ValidateBuffer()");
+		
+		//controller.ngModel.DepartmentCode = "ABC"
+		//controller.ngModel.DepartmentCode = 125
+
+    return true;
+	}
+	$scope.IsLimitModelStrictWithSchema = function(scope, iElement, iAttrs, controller){
+		return false;
+	}
+
+  $scope.CustomSubmitDataResult = function(data_or_JqXHR, 
+                        textStatus, 
+                        jqXHR_or_errorThrown, 
+                        $scope, 
+                        $element, 
+                        $attrs, 
+                        $ctrl){
+    // console.dir($scope)
+  }
+}]);
+</script>
+<!-- InstanceEndEditable -->
+</head>
+
+<body ng-app="myApp">
+<div id="top">
+  <div id="topBar"> <!-- InstanceBeginEditable name="topbar" --> <!-- InstanceEndEditable --> </div>
+</div>
+<!-- header start -->
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container">
+  <!-- InstanceBeginEditable name="header" -->
+    <div class="navbar-header"> <a class="navbar-brand" href="#"> <img alt="Brand" width="20" src="images/download.png"> </a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+      <p class="navbar-text">Development</p>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="main-menu.html">Home <span class="fa fa-home fa-lg"></span></a></li>
+        <li><a href="#" logout>Logout <span class="fa fa-sign-out fa-lg"></span></a></li>
+      </ul>
+    </div>
+  <!-- InstanceEndEditable -->
+  </div>
+</nav>
+<!-- header end -->
+<div class="container">
+<!-- InstanceBeginEditable name="page-header" -->
+<h1 class="page-header">Import / Export Master</h1>
+<!-- InstanceEndEditable -->
+<!-- site position start --> 
+<!-- InstanceBeginEditable name="position" -->
+<div id="site_position">
+    <ol class="breadcrumb">
+      <li><a href="main-menu.html">Home</a></li>
+    </ol>
+</div>
+<!-- InstanceEndEditable --> 
+</div>
+<!-- site position end --> 
+<div class="container">
+<!-- InstanceBeginEditable name="intro" -->
+<div ng-controller="createDepartmentController as createDeptCtrl" style="max-width: 750px;">
+	<h3>Exprot Master</h3>
+    <export ng-model="imExModel" program-id="eu01ms">
+        <div>
+          <label>
+            <input type="radio" ng-model="exportCtrl.ExportFileTypeAs.selectedOption" ng-value="exportCtrl.ExportFileTypeAs.availableOptions[0]">
+            {{exportCtrl.ExportFileTypeAs.availableOptions[0].name}}
+          </label><br/>
+          <label>
+            <input type="radio" ng-model="exportCtrl.ExportFileTypeAs.selectedOption" ng-value="exportCtrl.ExportFileTypeAs.availableOptions[1]">
+            {{exportCtrl.ExportFileTypeAs.availableOptions[1].name}}
+          </label><br/>
+<!--
+            <select  class="form-control" name="exportFileTypeOption" id="exportFileTypeOption"
+              ng-options="option.name for option in exportCtrl.ExportFileTypeAs.availableOptions track by option.id"
+              ng-model="exportCtrl.ExportFileTypeAs.selectedOption" ng-change="LanguageOptionChanged(languageOption.selectedOption)"></select>
+-->
+            <a href="#" class="btn btn-default" ng-click="SubmitData()">Export the template</a>
+        </div>
+    </export>
+    <hr>
+  <h3>Upload and Import Master</h3>
+  <import ng-model="importModel" program-id="eu01ms">
+    <form name="myForm">
+      Upload excel file: 
+      <upload ng-model="uploadFileInfo">
+        <button type="file" class="btn btn-default" ngf-select="UploadData($file)"
+          accept=".xls, .xlsx" ngf-max-size="10MB">Select Signle File</button><br>
+        <div ng-repeat="(key, value) in uploadInfo track by $index">
+          File name: {{value.name}}<br>
+          Size: {{value.size}} ({{value.uploadProgress}}%)<br>
+          <!-- <div style="font-size: smaller; background: orange; width:{{value.uploadProgress}}%" ng-bind="value.uploadProgress + '%'"></div> -->
+          <span ng-if="value.uploadResult.error != '0'">Error Code ({{value.uploadResult.error}}): {{value.uploadResult.errorMsg}}</span><br>
+        </div>
+      </upload>
+      <button class="btn btn-default" ng-click="SubmitData(uploadFileInfo)">Submit</button>
+    </form>
+    <br>
+    <div class="panel panel-default">
+      <div class="panel-heading">Process Message</div>
+      <div class="panel-body">
+        <message ng-model="processMsg">
+          <div class="well well-sm" ng-if="msgCtrl.ngModel.length > 0">
+            <div ng-repeat="dspMsg in msgCtrl.ngModel track by $index" ng-bind="dspMsg"></div>
+          </div>
+        </message>
+      </div>
+    </div>
+  </import>
+</div>
+<!-- InstanceEndEditable -->
+</div>
+<div class="container" id="content"> <!-- InstanceBeginEditable name="content" -->
+  <div id="vendorItem"> </div>
+  <!-- InstanceEndEditable -->
+  <div id="lasted_update"></div>
+</div>
+<div id="footer">
+  <footer class="text-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12">
+            <p>Copyright © MyCompany. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+  </footer>
+</div>
+</body>
+<!-- InstanceEnd --></html>
