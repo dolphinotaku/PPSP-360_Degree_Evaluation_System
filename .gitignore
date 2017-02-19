@@ -1,0 +1,9 @@
+# Ignoring third-party source
+third-party/
+third-party-source/
+
+# Ignoring resourse folder which store the word-template
+resourse/
+
+# Ignoring temp folder which stores the uploaded files, export templates
+temp/
