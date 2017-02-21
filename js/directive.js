@@ -1111,7 +1111,7 @@ app.directive('entry', ['$rootScope',
             
             SubmitData();
         }
-        
+		
         function ValidateSubmitData(){
             var isValid = true;
         	var editMode = DirectiveProperties.getEditMode();
@@ -2428,6 +2428,7 @@ app.directive('import', [
                 var data_or_JqXHR = responseObj.data;
 
                 MessageService.setMsg(data_or_JqXHR.ActionResult.process_result);
+                
             }, function(reason) {
               console.error("Fail in ImportData() - "+tagName + ":"+$scope.programId)
               Security.HttpPromiseFail(reason);
@@ -2994,8 +2995,11 @@ app.directive('range', ['$rootScope',
             var stringDifference = 0;
             
             if(rangeObject.start == "ALL"){
+                $ctrl.ngModel.isAll = true;
                 rangeObject.end = "";
                 return;
+            }else{
+                $ctrl.ngModel.isAll = false;
             }
             
             // string comparison, find the strStart position of strEnd
@@ -3139,10 +3143,10 @@ app.directive('range', ['$rootScope',
         compile: function compile(tElement, tAttrs, transclude) {
             return {
                 pre: function preLink(scope, iElement, iAttrs, controller) {
-                    //console.log("entry preLink() compile");
+                    //console.log("range preLink() compile");
                 },
                 post: function postLink(scope, iElement, iAttrs, controller) {
-                    //console.log("entry postLink() compile");
+                    //console.log("range postLink() compile");
                     
                     transclude(scope, function (clone, scope) {
                         iElement.find('.custom-transclude').append(clone);
@@ -3151,4 +3155,533 @@ app.directive('range', ['$rootScope',
             }
         },
     };
+}]);
+
+
+/**
+ * <process> submit a set of criteria to perform action, for reporting, complex inquiry, processing
+ * <process
+    ng-model=""
+    program-id=""
+    edit-mode=""
+    >
+ * @param {Object} ng-model - store the process criteria
+ * @param {String} program-id - assign the program id to implement the behavior of CRUD
+ */
+app.directive('process', ['$rootScope', 
+    '$q',
+    '$timeout', 
+    'Core', 
+    'Security', 
+    'LockManager', 
+    'LoadingModal',
+    'HttpRequeset', 
+    'MessageService', function($rootScope, $q, $timeout, Core, Security, LockManager, LoadingModal, HttpRequeset, MessageService) {
+    function ProcessConstructor($scope, $element, $attrs) {
+    	var constructor = this;
+    	var $ctrl = $scope.processCtrl;
+        var tagName = $element[0].tagName.toLowerCase();
+
+    	var globalCriteria = $rootScope.globalCriteria;
+        var backupNgModelObj = {};
+        
+        var DirectiveProperties = (function () {
+            var editMode;
+            var programID;
+
+            function findEditMode() {
+                var object = $scope.editMode = FindEditModeEnum($attrs.editMode);
+                return object;
+            }
+            function findProgramID(){
+                var object = $attrs.programId;
+                return object;
+            }
+
+            return {
+                getEditMode: function () {
+                    if (!editMode) {
+                        editMode = findEditMode();
+                    }
+                    return editMode;
+                },
+                getProgramID: function(){
+                    var isProgramIdFound = false;
+                    if(!programID){
+                        programID = findProgramID;
+                    }
+                    if(typeof(programID) != undefined){
+                        if(programID != null && programID !=""){
+                            isProgramIdFound = true;
+                        }
+                    }
+                    
+                    if(isProgramIdFound){
+                        $scope.programId = $attrs.programId;
+                    }
+                    else
+                        alert("<process> Must declare a attribute of program-id");
+                }
+            };
+        })();
+
+        function InitializeProcess() {
+        	$scope.tableStructure = {};
+//            DirectiveProperties.getEditMode();
+            DirectiveProperties.getProgramID();
+            
+            $scope.DisplayMessageList = MessageService.getMsg();
+            $ctrl.ngModel = {};
+        }
+
+        $scope.BackupNgModel = function(){ BackupNgModel(); }
+        $scope.RestoreNgModel = function(){ RestoreNgModel(); }
+		
+        function BackupNgModel(){
+            backupNgModelObj = jQuery.extend([], $ctrl.ngModel);
+        }
+
+        function RestoreNgModel(){
+            // 20170108, keithpoon, must use option 2, otherwise will break the StatusChange of the watch listener
+            // Option 1 will stick the ngModel with the defaulted value object 
+            // Option 2 will keep the customized value on the page, such is the prefered language setting
+
+            // Option 1: clone the default object as ngModel
+//            $ctrl.ngModel = angular.copy(backupNgModelObj);
+
+            // Option 2: append and overwrite the default value on ngModel
+             jQuery.extend(true, $ctrl.ngModel, backupNgModelObj);
+        }
+        
+        $scope.ResetForm = function(){
+            $scope.RestoreNgModel();
+        }
+		
+        function TryToCallInitDirective(){
+            if(typeof $scope.InitDirective == "function"){
+                $scope.InitDirective($scope, $element, $attrs, $ctrl);
+            }else{
+                $scope.DefaultInitDirective();
+            }
+        }
+        $scope.Initialize = function(){
+            $scope.InitScope();
+            if(typeof $scope.EventListener == "function"){
+                $scope.EventListener($scope, $element, $attrs, $ctrl);
+            }else{
+                EventListener();
+            }
+            TryToCallInitDirective();
+        }
+        $scope.InitScope = function(){
+            InitializeProcess();
+        }
+        $scope.DefaultInitDirective = function(){
+            
+        }
+		
+        $scope.SubmitData = function(){
+        	console.log("<"+$element[0].tagName+"> submitting data")
+            var globalCriteria = $rootScope.globalCriteria;
+
+        	$scope.LockAllControls();
+            
+            if(!ValidateSubmitData()){
+                return;
+            }
+            
+            SubmitData();
+        }
+        function ValidateSubmitData(){
+            var isValid = true;
+        	var editMode = DirectiveProperties.getEditMode();
+
+        	// if Buffer invalid, cannot send request
+        	var isBufferValid = true;
+			if(typeof $scope.ValidateBuffer == "function"){
+				isBufferValid = $scope.ValidateBuffer($scope, $element, $attrs, $ctrl);
+			}else{
+				isBufferValid = ValidateBuffer();
+			}
+            isValid = isValid && isBufferValid;
+			if(!isBufferValid){
+                $scope.UnLockAllControls();
+            }
+            
+            return isValid;
+        }
+        function SubmitData(){
+            var httpResponseObj = {};
+            var submitPromise;
+        	var editMode = DirectiveProperties.getEditMode();
+            var msg = "";
+            
+				if(typeof $scope.ProcessData == "function"){
+	            	submitPromise = scope.ProcessData($ctrl.ngModel, $scope, $element, $attrs, $ctrl);
+	            }else{
+	            	submitPromise = ProcessData($ctrl.ngModel);
+	            }
+                
+                submitPromise.then(function(responseObj) {
+                    httpResponseObj = responseObj;
+                    var data_or_JqXHR = responseObj.data;
+                    msg = data_or_JqXHR.Message;
+
+                    $scope.ResetForm();
+                }, function(reason) {
+                  console.error(tagName + ":"+$scope.programId + " - Fail in ProcessData()")
+                  throw reason;
+                });
+				
+            
+            submitPromise.catch(function(e){
+                // handle errors in processing or in error.
+                console.log("Submit data error catch in process");
+                Security.HttpPromiseFail(e);
+            }).finally(function() {
+                // Always execute unlock on both error and success
+                $scope.UnLockAllControls();
+
+                    
+                MessageService.addMsg(msg);
+                SubmitDataResult(httpResponseObj, httpResponseObj.status);
+                
+                if(typeof $scope.CustomSubmitDataResult == "function"){
+                    $scope.CustomSubmitDataResult(httpResponseObj, 
+                        httpResponseObj.status, 
+                        $scope, 
+                        $element, 
+                        $attrs, 
+                        $ctrl);
+                }
+            }).catch(function(e){
+                // handle errors in processing or in error.
+                console.warn(e)
+            })
+            
+            return submitPromise;
+        }
+        
+
+        function ProcessData(recordObj){
+        	var clientID = Security.GetSessionID();
+        	var programId = $scope.programId.toLowerCase();
+            
+			var submitData = {
+				"Session": clientID,
+				"Table": programId,
+				"Data": recordObj,
+			};
+            submitData.Action = "ProcessData";
+
+            var requestOption = {
+                method: 'POST',
+                data: JSON.stringify(submitData)
+            };
+
+            var request = HttpRequeset.send(requestOption);
+            return request;
+        }
+        
+        $scope.LockAllControls = function(){
+            LockAllControls();
+        }
+        $scope.LockAllInputBox = function(){
+            LockAllInputBox();
+        }
+        $scope.UnLockSubmitButton = function(){
+            UnLockSubmitButton();
+        }
+        $scope.UnLockAllControls = function(){
+			$timeout(function(){
+        		UnLockAllControls();
+			  	}, 2000); // (milliseconds),  1s = 1000ms
+        }
+        
+        $scope.ShowLoadModal = function(){
+            LoadingModal.showModal();
+        }
+        $scope.HideLoadModal = function(){
+            LoadingModal.hideModal();
+        }
+
+        // StatusChange() event listener
+		$scope.$watch(
+		  // This function returns the value being watched. It is called for each turn of the $digest loop
+		  function() { return $ctrl.ngModel; },
+		  // This is the change listener, called when the value returned from the above function changes
+		  function(newValue, oldValue) {
+		  	var changedField = "";
+		  	var changedValue;
+
+		    if ( newValue !== oldValue ) {
+		    	for(var colIndex in $ctrl.ngModel){
+	    			changedField = colIndex;
+	    			changedValue = newValue[colIndex];
+
+	    			if(oldValue!=null){
+	    				if ( Object.prototype.hasOwnProperty ) {
+			    			if(oldValue.hasOwnProperty(colIndex))
+			    			{
+                                if(oldValue[colIndex] === newValue[colIndex]){
+                                    continue;
+                                }
+                                if(oldValue[colIndex] == newValue[colIndex]){
+                                    continue;
+                                }
+			    			}
+		    			}
+	    			}
+
+                    // Convert to Uppercase, if the chagned field is a Key and data type is string
+                    // newValue = ConvertKeyFieldToUppercase(newValue, false);
+
+					if(typeof $scope.StatusChange == "function"){
+						$scope.StatusChange(colIndex, changedValue, newValue, $scope, $element, $attrs, $ctrl);
+					}else{
+						StatusChange();
+					}
+		    	}
+		    }
+		  },
+		  true
+		);
+
+        function LockAllControls(){
+            LockManager.LockAllControls($element, tagName);
+        }
+        function UnLockAllControls(){
+            LockManager.UnLockAllControls($element, tagName);
+        }
+        function LockAllInputBox(){
+            LockManager.LockAllInputBox($element, tagName);
+        }
+        function UnLockSubmitButton(){
+            LockManager.UnLockSubmitButton($element, tagName);
+        }
+
+        function TryToCallSetDefaultValue(){
+            if(typeof $scope.SetDefaultValue == "function"){
+                $scope.SetDefaultValue($scope, $element, $attrs, $ctrl);
+            }else{
+                SetDefaultValue();
+            }
+        }
+
+        function TryToCallIsLimitModelStrictWithSchema(){
+            var isLimitModelStrictWithSchema = false;
+            if(typeof $scope.IsLimitModelStrictWithSchema == "function"){
+                isLimitModelStrictWithSchema = $scope.IsLimitModelStrictWithSchema($scope, $element, $attrs, $ctrl);
+            }else{
+                isLimitModelStrictWithSchema = IsLimitModelStrictWithSchema();
+            }
+            return isLimitModelStrictWithSchema;
+        }
+
+        function InitDirective(){
+            console.log("scope.$id:"+$scope.$id+", may implement $scope.InitDirective() function in webapge");
+        }
+		function EventListener(){
+			console.log("scope.$id:"+$scope.$id+", may implement $scope.EventListener() function in webapge");
+		}
+		function SetDefaultValue(){
+			console.log("scope.$id:"+$scope.$id+", may implement $scope.SetDefaultValue() function in webapge");
+		}
+		function StatusChange(){
+			console.log("scope.$id:"+$scope.$id+", may implement $scope.StatusChange() function in webapge");	
+		}
+		function ValidateBuffer(){
+			console.log("scope.$id:"+$scope.$id+", may implement $scope.ValidateBuffer() function in webapge");	
+			return true;
+		}
+        
+        function IsLimitModelStrictWithSchema(){
+            return true;
+        }
+        function CustomGetDataResult(data_or_JqXHR, textStatus, jqXHR_or_errorThrown){
+            var progID = $scope.programId;
+            //console.log("scope.$id:"+$scope.$id+", programId:"+progID+", must implement $scope.CustomGetDataResult() function in webapge");
+        }
+        function SubmitDataResult(data_or_JqXHR, textStatus, jqXHR_or_errorThrown){
+
+        }
+
+        /**
+         * Valid the key columns
+         * @param {Object} recordObj - provide the record which is going to perform CRUD
+         * @return {bool} - true if key columns are exists, not null and empty. false otherwise
+         */
+        function IsKeyInDataRow(recordObj){
+            var tbStructure = $scope.tableStructure;
+            var itemsColumn = tbStructure.DataColumns;
+            var keyColumn = tbStructure.KeyColumns;
+
+            var isAllKeyExists = true;
+            for(var keyIndex in keyColumn){
+                var keyColName = keyColumn[keyIndex];
+                if(typeof(recordObj[keyColName]) == "undefined"){
+                    isAllKeyExists = false;
+                    continue;
+                }
+                // find the data type
+                var dataTypeFound = false;
+                var keyColDataType = "";
+                for (var colIndex in itemsColumn) {
+                    var colName = colIndex;;
+                    var colDataType = Core.ConvertMySQLDataType(itemsColumn[colIndex].type);
+                    var colValue = recordObj[colName];
+                    if(keyColName == colName){
+                        dataTypeFound = true;
+                        keyColDataType = colDataType;
+                        break;
+                    }
+                }
+
+                if(keyColDataType == "string"){
+                    if(recordObj[keyColName] == null || recordObj[keyColName] == "")
+                    {
+                        isAllKeyExists = false;
+                        continue;
+                    }
+                }
+
+            }
+
+            return isAllKeyExists;
+        }
+
+        $scope.Initialize();
+    }
+
+    function FindEditModeEnum(attrEditMode){
+        var globalCriteria = $rootScope.globalCriteria;
+        var isEditModeFound = false;
+        var isEditModeNumeric = false;
+        var editMode = 0;
+
+        if(typeof(attrEditMode) != undefined){
+            if(attrEditMode != null && attrEditMode !=""){
+                isEditModeFound = true;
+            }
+        }
+        if(isEditModeFound){
+            isEditModeNumeric = !isNaN(parseInt(attrEditMode));
+        }
+        if(!isEditModeFound){
+            editMode = globalCriteria.editMode.None;
+        }else{
+            if(isEditModeNumeric){
+                editMode = attrEditMode;
+            }
+            else{
+                attrEditMode = attrEditMode.toLowerCase();
+                if(attrEditMode == "none"){
+                    editMode = globalCriteria.editMode.None;
+                }
+                else if(attrEditMode == "create"){
+                    editMode = globalCriteria.editMode.Create;
+                }
+                else if(attrEditMode == "amend"){
+                    editMode = globalCriteria.editMode.Amend;
+                }
+                else if(attrEditMode == "delete"){
+                    editMode = globalCriteria.editMode.Delete;
+                }
+                else if(attrEditMode == "view"){
+                    editMode = globalCriteria.editMode.View;
+                }
+                else if(attrEditMode == "copy"){
+                    editMode = globalCriteria.editMode.Copy;
+                }
+                else if(attrEditMode == "null"){
+                    editMode = globalCriteria.editMode.Null;
+                }
+                else if(attrEditMode.indexOf("amend") >-1 && 
+                        attrEditMode.indexOf("delete") >-1 )
+                {
+                        editMode = globalCriteria.editMode.AmendAndDelete;
+                }
+                else{
+                    throw ("Unable to identify the edit mode '"+attrEditMode+"' on process");
+                }
+            }
+        }
+        return editMode;
+    }
+    function templateFunction(tElement, tAttrs) {
+        var globalCriteria = $rootScope.globalCriteria;
+
+        var template = '' +
+          // outside of the ng-transclude
+          // '<div>'+
+          // '</div>' +
+          // '<div class="well well-sm">'+
+          // '<p ng-repeat="dspMsg in DisplayMessageList track by $index" ng-bind="dspMsg"></p>'+
+          // '</div>' +
+          // inside of the ng-transclude
+          //'<div ng-transclude></div>' +
+          '<div class="custom-transclude"></div>';
+        return template;
+    }
+
+	return {
+		require: ['ngModel'],
+		restrict: 'EA', //'EA', //Default in 1.3+
+		transclude: true,
+
+		// scope: [false | true | {...}]
+		// false = use parent scope
+		// true =  A new child scope that prototypically inherits from its parent
+		// {} = create a isolate scope
+		scope: true,
+
+		controller: ProcessConstructor,
+		controllerAs: 'processCtrl',
+
+		//If both bindToController and scope are defined and have object hashes, bindToController overrides scope.
+		bindToController: {
+			ngModel: '=',
+		},
+		template: templateFunction,
+		compile: function compile(tElement, tAttrs, transclude) {
+		    return {
+		        pre: function preLink(scope, iElement, iAttrs, controller) {
+		            //console.log("process preLink() compile");
+		        },
+		        post: function postLink(scope, iElement, iAttrs, controller) {
+		            //console.log("process postLink() compile");
+
+                    // "scope" here is the directive's isolate scope 
+                    // iElement.find('.custom-transclude').append(
+                    // );
+                    transclude(scope, function (clone, scope) {
+                        iElement.find('.custom-transclude').append(clone);
+                    })
+
+                    /*
+                    // lock controls should put post here, 
+                    var globalCriteria = $rootScope.globalCriteria;
+                    if(scope.editMode == globalCriteria.editMode.None || 
+                        scope.editMode == globalCriteria.editMode.Null ||
+                        scope.editMode == globalCriteria.editMode.Create ||
+                        scope.editMode == globalCriteria.editMode.View ||
+                        scope.editMode == globalCriteria.editMode.Delete 
+                    ){
+                        // require table structure, lock all control.
+                        // the controls will be unlock after table structre received.
+//                        console.log("Mode is [View | Delete | None | Null], lock all controls")
+                        iElement.ready(function() {
+                            if(scope.editMode == globalCriteria.editMode.Delete)
+                                scope.LockAllInputBox();
+                            else
+                                scope.LockAllControls();
+                        })
+                    }
+                    */
+		        }
+		    }
+		    // or
+		    // return function postLink( ... ) { ... }
+		},
+	};
 }]);

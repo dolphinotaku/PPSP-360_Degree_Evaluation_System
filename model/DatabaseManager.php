@@ -252,7 +252,7 @@ class DatabaseManager{
     	if(null == $fetchType)
     		$fetchType = MYSQLI_NUM;
 
-    	$responseArray = $this->CreateResponseArray();
+    	$responseArray = Core::CreateResponseArray();
     	$sql_str = $this->sql_str;
 
 		if($this->IsNullOrEmptyString($sql_str)){
@@ -315,7 +315,7 @@ class DatabaseManager{
 		return $responseArray;
     }
     function queryResultToArrayVertical($sql_str, $fetchType=MYSQLI_NUM) {
-    	$responseArray = $this->CreateResponseArray();
+    	$responseArray = Core::CreateResponseArray();
     	$responseArray_errs = $this->responseArray_errs;
 
 		if($this->IsNullOrEmptyString($sql_str)){
@@ -531,6 +531,49 @@ class DatabaseManager{
 		$this->afterCreateInsertUpdateDelete(__FUNCTION__);
 		return $this->GetResponseArray();
 	}
+    
+	public function selectRange($fieldName, $selectionRange){
+//		$isBeforeSuccess = $this->beforeCreateInsertUpdateDelete(__FUNCTION__);
+
+		$array = $fieldName;
+		$dataSchema = $this->dataSchema;
+		$tempSelectWhichCols = "*";
+		if(!$this->isSelectAllColumns)
+			$tempSelectWhichCols = $this->selectWhichCols;
+		
+		$whereSQL = "";
+		$isWhere = false;
+		foreach ($array as $index => $value) {
+			// if TableManager->value =null, ignore
+			if(isset($value)){//$array[$index])){
+				if(isset($this->SearchDataType($dataSchema['data'], 'Field', $index)[0]['Default']))
+					if ($value == $this->SearchDataType($dataSchema['data'], 'Field', $index)[0]['Default'])
+						continue;
+				$whereSQL .= "`".$value."` BETWEEN \"". $selectionRange->$value->start . "\" and \"" . $selectionRange->$value->end . "\" or ";
+				$isWhere = true;
+			}
+		}
+		if($isWhere){
+			$whereSQL = rtrim($whereSQL, " or "); //would cut trailing 'and'.
+			$sql_str = sprintf("SELECT $tempSelectWhichCols from `%s` where %s",
+					$this->table,
+					$whereSQL);
+		}else{
+			$sql_str = sprintf("SELECT $tempSelectWhichCols from `%s`",
+					$this->table);
+		}
+
+		$this->sql_str = $sql_str;
+//		if(!$isBeforeSuccess){
+//			return $this->GetResponseArray();
+//		}
+		$this->responseArray = $this->queryForDataArray();
+		$this->responseArray['table_schema'] = $this->dataSchema['data'];
+
+		$this->afterCreateInsertUpdateDelete(__FUNCTION__);
+		return $this->GetResponseArray();
+	}
+    
     public function selectPrimaryKeyList(){
         $responseArray = array();
         $responseArray = $this->getPrimaryKeyName();
@@ -691,6 +734,10 @@ select(), count(), selectPage, insert(), update(), delete() must be public
 			if($this->IsNullOrEmptyString($array[$column])){
 				$isColumnNullOrEmpty = true;
 				// echo "IsNullOrEmpty";
+                
+                // 20170221, keithpoon, fixed: if the fk was null, don't assign empty
+                if(!isset($array[$column]))
+                    continue;
 			}
 			// if value exist are not null and empty
 			else {
@@ -819,6 +866,11 @@ select(), count(), selectPage, insert(), update(), delete() must be public
 			if($this->IsSystemField($key)){
 				continue;
 			}
+            
+            // 20170221, keithpoon, fixed: if the fk was null, don't assign empty
+            if(!isset($value))
+                continue;
+            
 			$isColumnAPK = array_search($key, $primaryKeySchema['data']['Field']);
 			// array_search return key index if found, false otherwise
 			if($isColumnAPK === false){

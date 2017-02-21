@@ -136,6 +136,9 @@ switch ($action) {
 	case 'ExportData':
 		$funcName = "ExportData";
 		break;
+    case 'ProcessData':
+        $funcName = "ProcessData";
+        break;
 	case 'IsKeyExists':
 		$funcName = "IsKeyExists";
 		break;
@@ -238,6 +241,9 @@ try{
 			//$sqlResultData['ActionResult'] = call_user_func($funcName);
 			// print_r(call_user_func($funcName));
 			break;
+        case 'ProcessData':
+            $sqlResultData['ActionResult'] = call_user_func_array($funcName, array($requestData));
+            break;
 		case 'IsKeyExists':
 			$sqlResultData['ActionResult'] = call_user_func_array($funcName, array($requestData));
 			// call_user_func($funcName);

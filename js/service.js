@@ -57,7 +57,10 @@ app.service('MessageService', function($rootScope, $timeout){
 			return;
 		if(msgList.length <= 0)
 			return;
-
+        
+        // clear message list
+        self.messageList.length = 0;
+        
         // cannot copy or assign the object directly to the messageList, it will break the assign by reference between the message directive
 		for(var index in msgList){
 			self.addMsg(msgList[index]);
