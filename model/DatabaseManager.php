@@ -439,7 +439,6 @@ class DatabaseManager{
 
 		$primaryKeySchema = $this->getPrimaryKeyName();
 		
-		// error handling
 		// is primary key missing?
 		foreach ($primaryKeySchema['data']['Field'] as $index => $value){
 			if($this->IsNullOrEmptyString($array[$value])){
@@ -457,7 +456,8 @@ class DatabaseManager{
 
 		
 		// stop and return error msg if PK missing
-/*		if($isPKMissing){
+		/*
+        if($isPKMissing){
 			$missingPK = "";
 			foreach ($primaryKeySchema['data']['Field'] as $index => $value){
 				if($this->IsNullOrEmptyString($array[$value])){
@@ -465,9 +465,11 @@ class DatabaseManager{
 				}
 			}
 			$missingPK = rtrim($missingPK, " , ");
-			array_push($this->responseArray_errs, sprintf(Core::$sys_err_msg["UpdateFailNoPK"], $missingPK));
+			array_push($this->responseArray_errs, sprintf(Core::$sys_err_msg["InsertFailNoPK"], $missingPK));
+			$this->responseArray['access_status'] = Core::$access_status["Error"];
 			return $this->GetResponseArray();
-		}	*/	
+		}
+        */
 		
 		$updateWhereColumn = rtrim($updateWhereColumn, " AND ");
 		// mapping a update sql
@@ -698,15 +700,30 @@ select(), count(), selectPage, insert(), update(), delete() must be public
 
 		$primaryKeySchema = $this->getPrimaryKeyName();
 
-		// error handling
 		// is primary key missing?
-		foreach ($primaryKeySchema['data']['Field'] as $index => $value){
-			if($this->IsNullOrEmptyString($array[$value])){
+		foreach ($primaryKeySchema['data']['Field'] as $index => $pkFieldName){
+            // if primary key allow auto_increment, by pass the checking
+            $isPKAutoIncrement = false;
+            foreach ($dataSchema['data'] as $index => $value){
+                $column = $value['Field'];
+                $type = $value['Type'];
+                if($column == $pkFieldName){
+                    if($value['Extra']){
+                        $isPKAutoIncrement = true;
+                        break;
+                    }
+                }
+            }
+            
+            if($isPKAutoIncrement)
+                continue;
+            
+			if($this->IsNullOrEmptyString($array[$pkFieldName])){
 				$isPKMissing = true;
 				break;
 			}
 		}
-
+		
 		// stop and return error msg if PK missing
 		if($isPKMissing){
 			$missingPK = "";
@@ -716,7 +733,7 @@ select(), count(), selectPage, insert(), update(), delete() must be public
 				}
 			}
 			$missingPK = rtrim($missingPK, " , ");
-			array_push($this->responseArray_errs, sprintf(Core::$sys_err_msg["UpdateFailNoPK"], $missingPK));
+			array_push($this->responseArray_errs, sprintf(Core::$sys_err_msg["InsertFailNoPK"], $missingPK));
 			$this->responseArray['access_status'] = Core::$access_status["Error"];
 			return $this->GetResponseArray();
 		}
@@ -741,8 +758,7 @@ select(), count(), selectPage, insert(), update(), delete() must be public
 			}
 			// if value exist are not null and empty
 			else {
-				$array_value = $this->GetSQLValueString($column);//$array[$column];
-				// echo "IsNotNullOrEmpty";
+				$array_value = $this->GetSQLValueString($column);
 			}
 			// if column cannot null
 			if(strtolower($value['Null']) == 'no'){
@@ -1044,6 +1060,7 @@ select(), count(), selectPage, insert(), update(), delete() must be public
 		}
 		// stop and return error msg if PK missing
 		if($isPKMissing){
+			$missingPK = "";
 			foreach ($primaryKeySchema['data']['Field'] as $index => $value){
 				if($this->IsNullOrEmptyString($array[$value])){
 					$missingPK.=$value." , ";
@@ -1294,7 +1311,7 @@ select(), count(), selectPage, insert(), update(), delete() must be public
 	 * @param string $value, The __set() method's $value argument specifies the value the $name'ed property should be set to.
      */
     function __set($name, $value) {
-        $method = 'set' . ucfirst($name);
+        $method = 'Set' . ucfirst($name);
 			if (method_exists($this, $method)) {
 				// Top Priority - if TableNameManager have setName method
 				$this->$method($value);
@@ -1420,14 +1437,14 @@ select(), count(), selectPage, insert(), update(), delete() must be public
 			case strpos($type, "mediumint") !== FALSE: // -8388608 to 8388607, 0 to 16777215
 			case strpos($type, "int") !== FALSE: // -2147483648 to 2147483647, 0 to 4294967295
 			case strpos($type, "bigint") !== FALSE: // -9223372036854775808 to 9223372036854775807, 0 to 18446744073709551615
-				$setValue = ($setValue != "") ? intval($setValue) : "NULL";
+				$setValue = ($setValue != "") ? intval($setValue) : NULL;
 				$typeCaseAs = "integer";
 				break;
 			//http://dev.mysql.com/doc/refman/5.0/en/fixed-point-types.html
 			//http://dev.mysql.com/doc/refman/5.0/en/floating-point-types.html
 			case strpos($type, "float") !== FALSE:
 			case strpos($type, "double") !== FALSE:
-				$setValue = ($setValue != "") ? doubleval($setValue) : "NULL";
+				$setValue = ($setValue != "") ? doubleval($setValue) : NULL;
 				$typeCaseAs = "decimal";
 				break;
 
@@ -1508,8 +1525,7 @@ select(), count(), selectPage, insert(), update(), delete() must be public
 			case strpos($type, "char") !== FALSE:
 			case strpos($type, "varchar") !== FALSE:
 			case strpos($type, "text") !== FALSE:
-
-				if(strpos($valueIn, "'")==0 && strrpos($valueIn, "'")==strlen($valueIn)-1){
+				if(strpos($valueIn, "'")==0 && strrpos($valueIn, "'")==strlen($valueIn)-1 && strlen($valueIn) != 1){
 					$valueOut = $valueIn;
 				}else{
 					$valueOut = ($valueIn != "") ? "'" . $valueIn . "'" : NULL;
@@ -1529,7 +1545,7 @@ select(), count(), selectPage, insert(), update(), delete() must be public
                 // both are cannot identify the $valueIn is NULL, always convert the NULL to 0 and return
 //                $valueOut = ($valueIn != "" && $valueIn != null) ? intval($valueIn) : "NULL";
 //				$valueOut = (is_null($valueIn) || $valueIn == "" || $valueIn == null) ? echo "NULL" : intval($valueIn);
-                $valueOut = is_int($valueIn) ? intval($valueIn) : "NULL";
+                $valueOut = is_int($valueIn) || gettype($valueIn)=="string" ? intval($valueIn) : "NULL";
                 
 				$typeCaseAs = "integer";
 				break;

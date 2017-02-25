@@ -890,7 +890,7 @@ class ExcelManager {
 		// $this->responseArray['importResult'] = $this->processMessageList;
 
 //		$responseArray = $this->GetResponseArray();
-		$responseArray['process_result'] = $this->processMessageList;
+		$responseArray['processed_message'] = $this->processMessageList;
 		$responseArray['access_status'] = Core::$access_status['OK'];
 
 		return $responseArray;
@@ -973,7 +973,7 @@ class ExcelManager {
 		$isKeyExists = $tableObject->CheckKeyExists();
 		// Update if exists, insert if not exists
 		if($isKeyExists)
-			$responseArray = $tableObject->update(true, true);
+			$responseArray = $tableObject->update(true);
 		else
 			$responseArray = $tableObject->insert();
         

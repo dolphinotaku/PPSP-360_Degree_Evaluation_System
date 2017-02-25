@@ -77,8 +77,8 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
 //		console.log(fieldName);
 //		console.log(newValue);
 		
-		if(fieldName == "DepartmentCode")
-			newObj.DepartmentCode = newObj.DepartmentCode.toUpperCase(); 
+		if(fieldName == "EvaluationCode")
+			newObj.EvaluationCode = newObj.EvaluationCode.toUpperCase(); 
 	}
 	
 	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){
@@ -102,6 +102,11 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
 //          $scope.directiveScopeDict["ew01dp"].ClearNRefreshData();
 //        }
     }
+	
+	$scope.CustomGetDataResult = function(responseObj, httpStatusCode, scope, element, attrs, ctrl){
+		console.dir(responseObj);
+		$scope.entryForm = responseObj[0];
+	}
 }]);
 </script>
 <!-- InstanceEndEditable -->
@@ -194,13 +199,14 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
 <!-- header end -->
 <div class="container">
 <!-- InstanceBeginEditable name="page-header" -->
-<h1 class="page-header">Create Department</h1>
+<h1 class="page-header">Personal Profile</h1>
 <!-- InstanceEndEditable -->
 <!-- site position start --> 
 <!-- InstanceBeginEditable name="position" -->
 <div id="site_position">
     <ol class="breadcrumb">
       <li><a href="main-menu.html">Home</a></li>
+      <li><a href="personal-profile.html">Profile</a></li>
     </ol>
 </div>
 <!-- InstanceEndEditable --> 
@@ -209,34 +215,81 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
 <div class="container">
 <!-- InstanceBeginEditable name="intro" -->
 <div ng-controller="createDepartmentController as createDeptCtrl" style="max-width: 750px;">
-        <div class="panel panel-default">
-          <div class="panel-heading">Process Message</div>
-          <div class="panel-body">
-            <message ng-model="processMsg" auto-close>
-              <div class="well well-sm" ng-if="msgCtrl.ngModel.length > 0">
-                <div ng-repeat="dspMsg in msgCtrl.ngModel track by $index" ng-bind="dspMsg"></div>
-              </div>
-            </message>
-          </div>
-        </div>
-	<h3>Create Department</h3>
-    <entry ng-model="entryForm" program-id="es01dp" edit-mode="create">
-      <form ng-submit="SubmitData()">
-        <fieldset>
-          <div class="form-group">
-            <label for="inputDeptCode">Department Code</label>
-            <input type="text" class="form-control" id="inputDeptCode" ng-model="entryForm.DepartmentCode">
-          </div>
-          <div class="form-group">
-            <label for="inputDesc">Description</label>
-            <input type="text" class="form-control" id="inputDesc" ng-model="entryForm.Description">
-          </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-default">Create</button>
-          </div>
-        </fieldset>
-      </form>
-    </entry>
+    <pageview ng-model="staffList" program-id="ew01pp" style="display:none;">
+        <screen program-id="ew01sf"></screen>
+    </pageview>
+    <entry ng-model="entryForm" program-id="ew01pp">
+		<form class="form-horizontal">
+			<fieldset>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Staff ID</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-static" ng-bind="entryForm.StaffID"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">User ID</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-static" ng-bind="entryForm.UserID"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Probation End Date</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-static" ng-bind="entryForm.ProbationEndDate | date : 'yyyy-MM-dd'"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">First Name</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-static" ng-bind="entryForm.FirstName"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Last Name</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-static" ng-bind="entryForm.LastName"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Chinese Name</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-static" ng-bind="entryForm.ChineseName"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Department Code</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-static" ng-bind="entryForm.DepartmentCode"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Staff Grade Code</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-static" ng-bind="entryForm.StaffGradeCode"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">PositionC ode</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-static" ng-bind="entryForm.PositionCode"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Supervisor ID</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-static" ng-bind="entryForm.SupervisorID"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Employment Date</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-static" ng-bind="entryForm.EmploymentDate | date : 'yyyy-MM-dd'"></p>
+                    </div>
+                </div>
+			</fieldset>
+		</form>
+	</entry>
 </div>
 <!-- InstanceEndEditable -->
 </div>

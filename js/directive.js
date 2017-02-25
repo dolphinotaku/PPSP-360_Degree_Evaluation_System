@@ -457,9 +457,11 @@ app.directive('pageview', ['$rootScope',
             };
 
             var request = HttpRequeset.send(requestOption);
+            var httpResponseObj = {};
             $scope.getNextPageTimes+1;
             request.then(function(responseObj) {
                 var data_or_JqXHR = responseObj.data;
+                httpResponseObj = responseObj;
                 $scope.UnLockAllControls();
                 
                 if(data_or_JqXHR.Status != "success")
@@ -492,11 +494,16 @@ app.directive('pageview', ['$rootScope',
               Security.HttpPromiseFail(reason);
             }).finally(function() {
                 // Always execute this on both error and success
-
                 if(typeof $scope.CustomGetDataResult == "function"){
-                    // $scope.CustomGetDataResult(data_or_JqXHR, textStatus, jqXHR_or_errorThrown, $scope, $element, $attrs, $ctrl);
+                    $scope.CustomGetDataResult(httpResponseObj.data.ActionResult.data, 
+                        httpResponseObj.status, 
+                        $scope, 
+                        $element, 
+                        $attrs, 
+                        $ctrl);
                 }else{
-                    // CustomGetDataResult(data_or_JqXHR, textStatus, jqXHR_or_errorThrown);
+                     CustomGetDataResult(httpResponseObj, 
+                        httpResponseObj.status);
                 }
                 
                 DisplayPageNum(pageNum);
@@ -734,7 +741,7 @@ app.directive('entry', ['$rootScope',
             });
 
             scopes.forEach(function(editboxScope){
-                editboxScope.ClearNgModel();
+                editboxScope.ClearEditboxNgModel();
             });
         }
         
@@ -1451,7 +1458,7 @@ app.directive('entry', ['$rootScope',
 
             var isAllKeyExists = IsKeyInDataRow(recordObj);
             if(!isAllKeyExists){
-                return $q.reject("Key not complete in record, avoid to create data.");
+                return $q.reject("Please provide the value of mandatory column. Avoid to create data.");
             }
 
         	var createObj = {
@@ -1491,7 +1498,7 @@ app.directive('entry', ['$rootScope',
 
             var isAllKeyExists = IsKeyInDataRow(recordObj);
             if(!isAllKeyExists){
-                return $q.reject("Key not complete in record, avoid to update data.");
+                return $q.reject("Please provide the value of mandatory column. Avoid to update data.");
             }
             
         	var updateObj = {
@@ -2427,7 +2434,7 @@ app.directive('import', [
             request.then(function(responseObj) {
                 var data_or_JqXHR = responseObj.data;
 
-                MessageService.setMsg(data_or_JqXHR.ActionResult.process_result);
+                MessageService.setMsg(data_or_JqXHR.ActionResult.processed_message);
                 
             }, function(reason) {
               console.error("Fail in ImportData() - "+tagName + ":"+$scope.programId)
@@ -3327,6 +3334,8 @@ app.directive('process', ['$rootScope',
                     var data_or_JqXHR = responseObj.data;
                     msg = data_or_JqXHR.Message;
 
+					MessageService.setMsg(data_or_JqXHR.ActionResult.processed_message);
+                    
                     $scope.ResetForm();
                 }, function(reason) {
                   console.error(tagName + ":"+$scope.programId + " - Fail in ProcessData()")

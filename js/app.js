@@ -281,7 +281,7 @@ app.service('LockManager', ['$rootScope', '$timeout', function($rootScope, $cook
 	return locker;
 }]);
 
-app.service('Security', ['$rootScope', 'Core', 'CookiesManager', '$cookies', function($rootScope, Core, $jqCookies, $cookies) {
+app.service('Security', ['$rootScope', 'Core', 'CookiesManager', '$cookies', 'MessageService', function($rootScope, Core, $jqCookies, $cookies, MessageService) {
 	var secure = this;
 	var rootScope = $rootScope;
    
@@ -403,6 +403,7 @@ app.service('Security', ['$rootScope', 'Core', 'CookiesManager', '$cookies', fun
 	secure.HttpPromiseFail = function(reason){
 		console.warn("HttpRequest promise return as fail");
 		console.dir(reason);
+        MessageService.addMsg(reason);
 	}
 
 	/**

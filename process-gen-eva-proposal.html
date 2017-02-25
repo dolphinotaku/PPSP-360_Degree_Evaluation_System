@@ -91,6 +91,8 @@ app.controller('testCtrl', ['$scope', function ($scope, $rootScope) {
         console.log("<"+iElement[0].tagName+">" +" Directive overried CustomPointedToRecord()");
         $scope.amendForm = sRecord;
         $scope.deleteForm = sRecord;
+        
+        console.dir(sRecord)
     }
 
     $scope.CustomSubmitDataResult = function(responseObj, httpStatusCode, scope, element, attrs, ctrl){
@@ -207,7 +209,67 @@ app.controller('testCtrl', ['$scope', function ($scope, $rootScope) {
 <!-- site position end --> 
 <div class="container">
 <!-- InstanceBeginEditable name="intro" -->
-place your content hered
+<div ng-model="testCtrl">
+    <process ng-model="processModel" program-id="ep01ep">
+        <form ng-submit="SubmitData()">
+            <fieldset>
+              <div class="form-group">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="inputDeptCode">Evaluation Code</label>
+                        <editbox ng-model="processModel.evaluationCode" program-id="ew01ev">
+                            <div class="input-group">
+                              <input class="form-control" type="text" id="card_cardID" ng-model="editboxCtrl.ngModel.EvaluationCode" readonly>
+                              <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="OpenPageView()"><i class="fa fa-bars"></i></button></span>
+                            </div>
+                        </editbox>
+                    </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <range ng-model="processModel.deptRange">
+                    <label for="card_cardID">Department Range</label>
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <editbox ng-model="deptEditBoxStart" program-id="ew01dp" range="start" range-value="{{editboxCtrl.ngModel.DepartmentCode}}">
+                                <div class="input-group">
+                                  <input class="form-control" type="text" id="card_cardID" ng-model="rangeCtrl.ngModel.start" readonly>
+                                  <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="OpenPageView()"><i class="fa fa-bars"></i></button></span>
+                                </div>
+                            </editbox>
+                        </div>
+                        <div class="form-group">
+                            <editbox ng-model="deptEditBoxEnd" program-id="ew01dp" range="end" range-value="{{editboxCtrl.ngModel.DepartmentCode}}">
+                                <div class="input-group">
+                                  <input class="form-control" type="text" id="card_cardID" ng-model="rangeCtrl.ngModel.end" readonly>
+                                  <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="OpenPageView()"><i class="fa fa-bars"></i></button></span>
+                                </div>
+                            </editbox>
+                        </div>
+                    </div>
+                </range>
+              </div>
+              <div class="form-group">
+                <label for="isClearAll">Clear all record fist</label>
+                <input type="checkbox" class="form-control" id="isClearAll" ng-model="processModel.IsClearAll">
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-default">Submit</button>
+              </div>
+            <div class="panel panel-default">
+              <div class="panel-heading">Process Message</div>
+              <div class="panel-body">
+                <message ng-model="processMsg">
+                  <div class="well well-sm" ng-if="msgCtrl.ngModel.length > 0">
+                    <div ng-repeat="dspMsg in msgCtrl.ngModel track by $index" ng-bind="dspMsg"></div>
+                  </div>
+                </message>
+              </div>
+            </div>
+            </fieldset>
+        </form>
+    </process>
+</div>
 <!-- InstanceEndEditable -->
 </div>
 <div class="container" id="content"> <!-- InstanceBeginEditable name="content" -->

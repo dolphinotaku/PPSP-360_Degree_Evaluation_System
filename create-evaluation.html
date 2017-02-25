@@ -37,7 +37,7 @@ $(function() {
 </script>
 <script>
 "use strict";
-app.controller('createDepartmentController', ['$scope', 'Security', function ($scope, Security, $rootScope) {
+app.controller('createDepartmentController', ['$scope', 'Security', 'MessageService', function ($scope, Security, MessageService, $rootScope) {
 	$scope.directiveScopeDict = {};
 	$scope.directiveCtrlDict = {};
     
@@ -69,7 +69,7 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
 	$scope.SetDefaultValue = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried SetDefaultValue()");
 		
-		controller.ngModel.gender = "M";
+		//controller.ngModel.gender = "M";
 	}
 	
 	$scope.StatusChange = function(fieldName, newValue, newObj, scope, iElement, iAttrs, controller){
@@ -77,17 +77,76 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
 //		console.log(fieldName);
 //		console.log(newValue);
 		
-		if(fieldName == "DepartmentCode")
-			newObj.DepartmentCode = newObj.DepartmentCode.toUpperCase(); 
+		if(fieldName == "EvaluationCode")
+			newObj.EvaluationCode = newObj.EvaluationCode.toUpperCase(); 
 	}
 	
 	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried ValidateBuffer()");
 		
-		//controller.ngModel.DepartmentCode = "ABC"
-		//controller.ngModel.DepartmentCode = 125
+		var isValid = true;
+		var record = controller.ngModel;
+		var msg = [];
+		
+		var startDate = record.StartDate;
+		var endDate = record.EndDate;
+		var probationEndDate = record.ProbationEndDate;
+		var reminderStartDate = record.ReminderStartDate;
+		var reminderEndDate = record.ReminderEndDate;
+		
+		if(!startDate){
+			isValid = false;
+			msg.push("Start Date is invalid");
+		}
+		
+		if(!endDate){
+			isValid = false;
+			msg.push("End Date is invalid");
+		}
+		
+		if(!probationEndDate){
+			isValid = false;
+			msg.push("Probation End Date is invalid");
+		}
+		
+		if(!reminderStartDate){
+			isValid = false;
+			msg.push("Reminder Start Date is invalid");
+		}
+		
+		if(!reminderEndDate){
+			isValid = false;
+			msg.push("Reminder End Date is invalid");
+		}
+		
+		// validate startDate, endDate
+		if(startDate.getTime() > endDate.getTime()) { 
+			isValid = false;
+			msg.push("Start Date cannot after than End Date");
+		}
+		// validate reminderStartDate, reminderEndDate
+		if(reminderStartDate.getTime() > reminderEndDate.getTime()) { 
+			isValid = false;
+			msg.push("Reminder Start Date cannot after than Reminder End Date");
+		}
+		
+		// validate reminder date period should inside of the evaluation period
+		if(reminderStartDate < startDate || reminderEndDate > endDate){
+			isValid = false;
+			msg.push("Reminder Date Period should inside of the Evaluation Period");
+		}
+		
+		// validate probation end date should on or before the evaluation start date
+		if(probationEndDate > startDate){
+			isValid = false;
+			msg.push("Probation End Date should on or before the Evaluation Start Date");
+		}
+		
+		if(!isValid){
+			MessageService.setMsg(msg);
+		}
 
-        return true;
+        return isValid;
 	}
 
     $scope.CustomSelectedToRecord = function(sRecord, rowScope, scope, iElement, controller){
@@ -194,7 +253,7 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
 <!-- header end -->
 <div class="container">
 <!-- InstanceBeginEditable name="page-header" -->
-<h1 class="page-header">Create Department</h1>
+<h1 class="page-header">Create Evaluation</h1>
 <!-- InstanceEndEditable -->
 <!-- site position start --> 
 <!-- InstanceBeginEditable name="position" -->
@@ -219,24 +278,54 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
             </message>
           </div>
         </div>
-	<h3>Create Department</h3>
-    <entry ng-model="entryForm" program-id="es01dp" edit-mode="create">
-      <form ng-submit="SubmitData()">
-        <fieldset>
-          <div class="form-group">
-            <label for="inputDeptCode">Department Code</label>
-            <input type="text" class="form-control" id="inputDeptCode" ng-model="entryForm.DepartmentCode">
-          </div>
-          <div class="form-group">
-            <label for="inputDesc">Description</label>
-            <input type="text" class="form-control" id="inputDesc" ng-model="entryForm.Description">
-          </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-default">Create</button>
-          </div>
-        </fieldset>
-      </form>
-    </entry>
+	<h3>Create Evaluation</h3>
+    <entry ng-model="entryForm" program-id="es01ev" edit-mode="create">
+		<form ng-submit="SubmitData()">
+			<fieldset>
+                <div class="form-group">
+                    <label for="inEvaCode">Evaluation Code</label>
+                    <input type="text" class="form-control" id="inEvaCode" ng-model="entryForm.EvaluationCode">
+                </div>
+                <div class="form-group">
+                    <label for="inputDesc">Description</label>
+                    <textarea class="form-control" id="inputDesc" ng-model="entryForm.Description"></textarea>
+                </div>
+                <div class="form-group">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="inputStart">Start Date</label>
+                        <input type="date" class="form-control" id="inputStart" ng-model="entryForm.StartDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="intputEnd">End Date</label>
+                        <input type="date" class="form-control" id="intputEnd" ng-model="entryForm.EndDate">
+                    </div>
+                </div>
+                </div>
+                <div class="form-group">
+                <div class="form-inline">
+                    <label for="inputProEnd">Probation End Date</label>
+                    <input type="date" class="form-control" id="inputProEnd" ng-model="entryForm.ProbationEndDate">
+                </div>
+                </div>
+                <div class="form-group">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="inputReStart">Reminder Start Date</label>
+                        <input type="date" class="form-control" id="inputReStart" ng-model="entryForm.ReminderStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputReEnd">Reminder End Date</label>
+                        <input type="date" class="form-control" id="inputReEnd" ng-model="entryForm.ReminderEndDate">
+                    </div>
+                </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-default">Create</button>
+                </div>
+			</fieldset>
+		</form>
+	</entry>
 </div>
 <!-- InstanceEndEditable -->
 </div>

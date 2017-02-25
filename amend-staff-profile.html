@@ -111,7 +111,6 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
 			isValid = false;
 			msg.push("Probation End Date should on or before the Employment Date");
 		}
-		
 		// validate birthday should before the employment date
 		if(birthday.getDate() >= employmentDate.getDate()){
 			isValid = false;
@@ -134,8 +133,13 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
         var scopeID = scope.$id;
         var hashID = scopeID + '_' + tagName + '_' + prgmID;
         
-        if(typeof $scope.directiveScopeDict[hashID].SetEditboxNgModel == "function")
+        if(typeof $scope.directiveScopeDict[hashID].SetEditboxNgModel == "function"){
             CustomSelectedToRecordUnderEditbox(sRecord, rowScope, scope, iElement, controller);
+		}else{
+			if(prgmID == "ew01sf"){
+				$scope.entryForm = sRecord;
+			}
+		}
     }
     
     function CustomSelectedToRecordUnderEditbox(sRecord, rowScope, scope, iElement, controller){
@@ -267,7 +271,7 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
 <!-- header end -->
 <div class="container">
 <!-- InstanceBeginEditable name="page-header" -->
-<h1 class="page-header">Create Staff Profile</h1>
+<h1 class="page-header">Amend Staff Profile</h1>
 <!-- InstanceEndEditable -->
 <!-- site position start --> 
 <!-- InstanceBeginEditable name="position" -->
@@ -292,13 +296,16 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
             </message>
           </div>
         </div>
-	<h3>Create Staff Profile</h3>
-    <entry ng-model="entryForm" program-id="ee01sf" edit-mode="create">
+	<h3>Amend Staff Profile</h3>
+    <pageview ng-model="staffDataList" program-id="ew01sf">
+        <screen></screen>
+    </pageview>
+    <entry ng-model="entryForm" program-id="ee01sf" edit-mode="amend">
       <form ng-submit="SubmitData()">
         <fieldset>
           <div class="form-group">
             <label for="inputDeptCode">Staff ID</label>
-            <input type="text" class="form-control" id="inputDeptCode" ng-model="entryForm.StaffID">
+            <input type="text" class="form-control" id="inputDeptCode" ng-model="entryForm.StaffID" readonly>
           </div>
           <div class="form-group">
             <label for="inputFN">First Name</label>
@@ -425,7 +432,7 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
 			  </div>
           </div>
           <div class="form-group">
-            <button type="submit" class="btn btn-default">Create</button>
+            <button type="submit" class="btn btn-default">Update</button>
           </div>
         </fieldset>
       </form>

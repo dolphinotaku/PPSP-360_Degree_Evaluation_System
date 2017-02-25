@@ -6,39 +6,40 @@ $data 			= array(); 		// array to pass back data
 $responseArray = array();
 
 function GetTableStructure(){
-	$staffManager = new StaffManager();
+	$evaluationManager = new EvaluationManager();
     
-    return $staffManager->selectPrimaryKeyList();
+    return $evaluationManager->selectPrimaryKeyList();
 }
 
 function CreateData($requestData){
-	$staffManager = new StaffManager();
+	$evaluationManager = new EvaluationManager();
     
 	$createRows = new stdClass();
 	$createRows = $requestData->Data->Header;
 	foreach ($createRows as $keyIndex => $rowItem) {
-		// $staffManager->Initialize();
+		// $evaluationManager->Initialize();
 		foreach ($rowItem as $columnName => $value) {
-			$staffManager->$columnName = $value;
+			$evaluationManager->$columnName = $value;
 		}
         
-		$responseArray = $staffManager->insert();
+        $evaluationManager->_UserID = null;
+		$responseArray = $evaluationManager->insert();
 
 	}
 	return $responseArray;
 }
 
 function FindData($requestData){
-	$staffManager = new StaffManager();
+	$evaluationManager = new EvaluationManager();
 
 	$updateRows = new stdClass();
 	$updateRows = $requestData->Data->Header;
     
 	foreach ($updateRows as $keyIndex => $rowItem) {
         foreach ($rowItem as $columnName => $value) {
-            $staffManager->$columnName = $value;
+            $evaluationManager->$columnName = $value;
         }
-        $responseArray = $staffManager->select();
+        $responseArray = $evaluationManager->select();
         break;
     }
     
@@ -46,44 +47,43 @@ function FindData($requestData){
 }
 
 function GetData($requestData){
-	$staffManager = new StaffManager();
+	$evaluationManager = new EvaluationManager();
     
 	$offsetRecords = 0;
 	$offsetRecords = $requestData->Offset;
 	$pageNum = $requestData->PageNum;
 
-	$responseArray = $staffManager->selectPage($offsetRecords);
+	$responseArray = $evaluationManager->selectPage($offsetRecords);
     
 	return $responseArray;
 
 }
 
 function UpdateData($requestData){
-	$staffManager = new StaffManager();
+	$evaluationManager = new EvaluationManager();
 
 	$updateRows = new stdClass();
 	$updateRows = $requestData->Data->Header;
 	foreach ($updateRows as $keyIndex => $rowItem) {
 		foreach ($rowItem as $columnName => $value) {
-			$staffManager->$columnName = $value;
+			$evaluationManager->$columnName = $value;
 		}
-        
-		$responseArray = $staffManager->update();
+		$responseArray = $evaluationManager->update();
 
 	}
 	return $responseArray;
 }
 
 function DeleteData($requestData){
-	$staffManager = new StaffManager();
+	$evaluationManager = new EvaluationManager();
 
 	$deleteRows = new stdClass();
 	$deleteRows = $requestData->Data->Header;
 	foreach ($deleteRows as $keyIndex => $rowItem) {
 		foreach ($rowItem as $columnName => $value) {
-			$staffManager->$columnName = $value;
+			$evaluationManager->$columnName = $value;
 		}
-		$responseArray = $staffManager->delete();
+		$responseArray = $evaluationManager->delete();
 
 	}
 	return $responseArray;

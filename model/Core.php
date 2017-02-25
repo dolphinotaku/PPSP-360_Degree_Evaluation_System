@@ -57,6 +57,7 @@ class Core {
         "SQLNullOrEmpty" => "sql query is empty",
 
         // insert error
+        "InsertFailNoPK" => "Primary Key: (%s) have not set, cannot insert.",
         "InsertFailFieldsNullOrEmpty" => "All Fields are null or empty: insert a record with all null or empty cols, what you are doing?",
 
         // update error
