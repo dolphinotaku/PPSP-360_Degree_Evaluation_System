@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Develop |</title>
+<title>360 Evaluation | Login</title>
 <!-- InstanceEndEditable -->
 <link rel="icon" type="image/png" href="images/logo48.png" />
 <link rel="stylesheet" type="text/css" href="css/body.css">
@@ -49,8 +49,8 @@ app.run(function ($rootScope, $log, Security) {
 app.controller('loginCtrl', function ($rootScope, $scope, $cookies, Security) {
 	  
 	var entryForm = {};
-	entryForm.UserCode = "demo";
-	entryForm.Password = "flex";
+	entryForm.UserCode = "admin";
+	entryForm.Password = "admin";
 	
 	$scope.entryForm = {};
 	$scope.entryForm = entryForm;
@@ -87,36 +87,6 @@ app.controller('loginCtrl', function ($rootScope, $scope, $cookies, Security) {
     if(jqXHR_or_errorThrown == "Bad Request"){
       jqXHR_or_errorThrown = data_or_JqXHR;
     }else{}
-
-/*
-    if(jqXHR_or_errorThrown.status != 200){
-      $scope.UnLockAllControls();
-      var msg="";
-      var responseText = jqXHR_or_errorThrown.responseText;
-
-      if(typeof(responseText) != "undefined" && responseText != ""){
-        if(responseText.indexOf("InvalidPassword") > 0)
-        {
-          msg = "Invalid Password";
-          $( "#inputPassword" ).focus();
-        }
-        else if(responseText.indexOf("InvalidUser") > 0)
-        {
-          msg = "Invalid Login ID";
-          $( "#inputUsername" ).focus();
-        }
-        else
-        {
-          msg = jqXHR_or_errorThrown.responseText;
-        }
-      }
-      else
-      {
-          msg = "Unkown Connection Error.";
-      }
-      $scope.DisplayLoginResultMessage(msg);
-    }
-	*/
 	
 	if(jqXHR_or_errorThrown.status != 200){
           msg = "Unkown Connection Error.";

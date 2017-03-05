@@ -225,8 +225,8 @@ class SecurityManager extends DatabaseManager {
 		{
 			return $this->GetLoginData();
 		}else{
-			$this->loginID = $this->tempLoginID;
-			$this->password = $this->Hash($this->tempPassword);
+			$this->LoginID = $this->tempLoginID;
+			$this->Password = $this->Hash($this->tempPassword);
 			$tmpResponseArray = $this->select();
 
 			$tmpResponseArray["SESSION_ID"] = 0;

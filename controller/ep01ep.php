@@ -78,6 +78,7 @@ function ProcessData($requestData){
             $evaProposalManager->Initialize();
             
             $evaProposalManager->_ = $rowItem;
+            $evaProposalManager->Status = "I";
             
             // Check key exists
             $isKeyExists = $evaProposalManager->CheckDuplicateEvaluateeor();
