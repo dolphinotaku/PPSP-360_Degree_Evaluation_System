@@ -403,8 +403,8 @@ app.directive('pageview', ['$rootScope',
     		var recordNumberEnd = pageNum * numOfRecordPerPage - 1;
 
             var currentPageRecords = [];
-            $scope.currentPageRecords = [];
-            $ctrl.ngModel = [];
+//            $scope.currentPageRecords = [];
+//            $ctrl.ngModel = [];
 
     		if(typeof($scope.sortedDataSource[recordNumberStart]) == "undefined"){
 
@@ -420,7 +420,12 @@ app.directive('pageview', ['$rootScope',
 	    		}
     		}
 
-            $ctrl.ngModel = $scope.currentPageRecords = currentPageRecords;
+//    		console.log('currentPageRecords.length:'+currentPageRecords.length);
+    		if(currentPageRecords && currentPageRecords.length){
+    			$ctrl.ngModel = $scope.currentPageRecords = currentPageRecords;
+    		}else{
+    			$scope.DisplayMessage = "End of records.";
+    		}
     	}
 
     	$scope.GetNextPageRecords = function(pageNum, lastRecordIndex, criteriaObj){

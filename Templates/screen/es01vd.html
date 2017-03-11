@@ -1,0 +1,26 @@
+<div class="table-responsive">
+	<table class="table table-condensed table-hover">
+	  <thead>
+		<tr>
+			<th>Vendor ID</th>
+<!-- 			<th>User ID</th> -->
+			<th>Name</th>
+			<th>Contact Person</th>
+			<th>Phone</th>
+			<th>Email</th>
+		</tr>
+	  </thead>
+	  <tbody>
+		<tr ng-repeat="row in pageviewCtrl.ngModel" 
+		ng-click="PointedToRecord(row, $event, this)"
+		ng-dblclick="SelectedToRecord(row, $event, this)">
+		  <td>{{row.VendorID | uppercase}}</td>
+<!-- 		  <td>{{row.UserID}}</td> -->
+		  <td>{{row.Name}}</td>
+		  <td>{{row.ContactPerson}}</td>
+		  <td>{{row.Phone}}</td>
+		  <td>{{row.Email}}</td>
+		</tr>
+	  </tbody>
+	</table>
+</div>
