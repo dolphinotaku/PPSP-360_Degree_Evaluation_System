@@ -255,9 +255,9 @@ try{
 	}
 	
 	if($action != "GetTableStructure")
-	if($sqlResultData['ActionResult']['access_status'] != "OK"){
-		$responseData->Status = "Fail";
-	}
+        if($sqlResultData['ActionResult']['access_status'] != "OK"){
+            $responseData->Status = "Fail";
+        }
 
 }catch (Exception $e) {
 	$responseData->Status = "Error";

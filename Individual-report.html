@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>360 Evaluation | Position</title>
+<title>360 Evaluation | Individual Report</title>
 <!-- InstanceEndEditable -->
 <link rel="icon" type="image/png" href="images/logo48.png" />
 <link rel="stylesheet" type="text/css" href="css/body.css">
@@ -37,7 +37,10 @@ $(function() {
 </script>
 <script>
 "use strict";
-app.controller('createPositionController', ['$scope', 'Security', function ($scope, Security, $rootScope) {
+app.controller('testCtrl', ['$scope', function ($scope, $rootScope) {
+	$scope.directiveScopeDict = {};
+	$scope.directiveCtrlDict = {};
+	
 	function Initialize(){
 		var entryForm = {};
 		
@@ -47,11 +50,11 @@ app.controller('createPositionController', ['$scope', 'Security', function ($sco
 	
 	$scope.EventListener = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried EventListener()");
-		
-//		console.dir(scope);
-//		console.dir(iElement);
-//		console.dir(iAttrs);
-//		console.dir(controller);
+		var prgmID = scope.programId;
+		if($scope.directiveScopeDict[prgmID] == null || typeof($scope.directiveScopeDict[prgmID]) == "undefined"){
+		  $scope.directiveScopeDict[prgmID] = scope;
+		  $scope.directiveCtrlDict[prgmID] = controller;
+		}
 		
 		//http://api.jquery.com/Types/#Event
 		//The standard events in the Document Object Model are:
@@ -66,20 +69,20 @@ app.controller('createPositionController', ['$scope', 'Security', function ($sco
 	$scope.SetDefaultValue = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried SetDefaultValue()");
 		
-		controller.ngModel.gender = "M";
+		//controller.ngModel.gender = "M";
 	}
 	
 	$scope.StatusChange = function(fieldName, newValue, newObj, scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried StatusChange()");
-//		console.log(fieldName);
-//		console.log(newValue);
 		
-		if(fieldName == "PositionCode")
-			newObj.PositionCode = newObj.PositionCode.toUpperCase(); 
+		if(fieldName == "DepartmentCode")
+			newObj.DepartmentCode = newObj.DepartmentCode.toUpperCase(); 
 	}
 	
 	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried ValidateBuffer()");
+		
+		//controller.ngModel.DepartmentCode = "ABC"
 
         return true;
 	}
@@ -88,13 +91,15 @@ app.controller('createPositionController', ['$scope', 'Security', function ($sco
         console.log("<"+iElement[0].tagName+">" +" Directive overried CustomPointedToRecord()");
         $scope.amendForm = sRecord;
         $scope.deleteForm = sRecord;
+        
+        console.dir(sRecord)
     }
 
     $scope.CustomSubmitDataResult = function(responseObj, httpStatusCode, scope, element, attrs, ctrl){
         var prgmID = scope.programId;
-        if(prgmID == "es01ps"){
-          $scope.directiveScopeDict["ew01ps"].ClearNRefreshData();
-        }
+//        if(prgmID == "es01dp"){
+//          $scope.directiveScopeDict["ew01dp"].ClearNRefreshData();
+//        }
     }
 }]);
 </script>
@@ -118,7 +123,7 @@ app.controller('createPositionController', ['$scope', 'Security', function ($sco
       </button>
       <a class="navbar-brand" href="#">360° Evaluation System</a>
     </div>
-    <div class="navbar-collapse collapse">
+    <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav" id="bs-example-navbar-collapse-1">
         <li><a href="main-menu.html">Home <span class="fa fa-home fa-lg"></span></a></li>
         <li class="dropdown">
@@ -188,13 +193,15 @@ app.controller('createPositionController', ['$scope', 'Security', function ($sco
 <!-- header end -->
 <div class="container">
 <!-- InstanceBeginEditable name="page-header" -->
-<h1 class="page-header">Position Maintenance</h1>
+<h1 class="page-header">Individual Report <small>Generation</small></h1>
 <!-- InstanceEndEditable -->
 <!-- site position start --> 
 <!-- InstanceBeginEditable name="position" -->
 <div id="site_position">
     <ol class="breadcrumb">
       <li><a href="main-menu.html">Home</a></li>
+      <li>Evaluation</li>
+      <li><a href="#">Individual Report</a></li>
     </ol>
 </div>
 <!-- InstanceEndEditable --> 
@@ -202,91 +209,39 @@ app.controller('createPositionController', ['$scope', 'Security', function ($sco
 <!-- site position end --> 
 <div class="container">
 <!-- InstanceBeginEditable name="intro" -->
-<div ng-controller="createPositionController as createDeptCtrl" style="max-width: 750px;">
-        <div class="panel panel-default">
-          <div class="panel-heading">Process Message</div>
-          <div class="panel-body">
-            <message ng-model="processMsg" auto-close>
-              <div class="well well-sm" ng-if="msgCtrl.ngModel.length > 0">
-                <div ng-repeat="dspMsg in msgCtrl.ngModel track by $index" ng-bind="dspMsg"></div>
+<div ng-model="testCtrl">
+    <process ng-model="processModel" program-id="er01ir">
+        <form ng-submit="SubmitData()">
+            <fieldset>
+              <div class="form-group">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="inputDeptCode">Evaluation Code</label>
+                        <editbox ng-model="processModel.evaluationCode" program-id="ew01ev">
+                            <div class="input-group">
+                              <input class="form-control" type="text" id="card_cardID" ng-model="editboxCtrl.ngModel.EvaluationCode" readonly>
+                              <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="OpenPageView()"><i class="fa fa-bars"></i></button></span>
+                            </div>
+                        </editbox>
+                    </div>
+                </div>
               </div>
-            </message>
-          </div>
-        </div>
-	<h3>Create Position</h3>
-    <entry ng-model="entryForm" program-id="es01ps" edit-mode="create">
-      <form ng-submit="SubmitData()">
-        <fieldset>
-          <div class="form-group">
-            <label for="inputDeptCode">Position Code</label>
-            <input type="text" class="form-control" id="inputDeptCode" ng-model="entryForm.PositionCode">
-          </div>
-          <div class="form-group">
-            <label for="inputDesc">Description</label>
-            <input type="text" class="form-control" id="inputDesc" ng-model="entryForm.Description">
-          </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-default">Create</button>
-          </div>
-        </fieldset>
-      </form>
-    </entry>
-	<h3>Amend Position</h3>
-    <pageview ng-model="deptDataList" program-id="ew01ps">
-    	<div class="table-responsive">
-            <table class="table table-condensed table-hover">
-              <thead>
-                <tr>
-                    <th>Position Code</th>
-                    <th>Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="deptRow in pageviewCtrl.ngModel" 
-                ng-click="PointedToRecord(deptRow, $event, this)"
-                ng-dblclick="SelectedToRecord(deptRow, $event, this)">
-                  <td>{{deptRow.PositionCode}}</td>
-                  <td>{{deptRow.Description}}</td>
-                </tr>
-              </tbody>
-            </table>
-      </div>
-    </pageview>
-    <entry ng-model="amendForm" program-id="es01ps" edit-mode="amend">
-      <form ng-submit="SubmitData()">
-        <fieldset>
-          <div class="form-group">
-            <label for="inputDeptCode">Position Code</label>
-            <input type="text" class="form-control" id="inputDeptCode" ng-model="amendForm.PositionCode">
-          </div>
-          <div class="form-group">
-            <label for="inputDesc">Description</label>
-            <input type="text" class="form-control" id="inputDesc" ng-model="amendForm.Description">
-          </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-default">Update</button>
-          </div>
-        </fieldset>
-      </form>
-    </entry>
-	<h3>Delete Position</h3>
-    <entry ng-model="deleteForm" program-id="es01ps" edit-mode="delete">
-      <form ng-submit="SubmitData()">
-        <fieldset>
-          <div class="form-group">
-            <label for="inputDeptCode">Position Code</label>
-            <input type="text" class="form-control" id="inputDeptCode" ng-model="deleteForm.PositionCode">
-          </div>
-          <div class="form-group">
-            <label for="inputDesc">Description</label>
-            <input type="text" class="form-control" id="inputDesc" ng-model="deleteForm.Description">
-          </div>
-        </fieldset>
-          <div class="form-group">
-            <button type="submit" class="btn btn-default">Delete</button>
-          </div>
-      </form>
-    </entry>
+              <div class="form-group">
+                <button type="submit" class="btn btn-default">Submit</button>
+              </div>
+            <div class="panel panel-default">
+              <div class="panel-heading">Process Message</div>
+              <div class="panel-body">
+                <message ng-model="processMsg">
+                  <div class="well well-sm" ng-if="msgCtrl.ngModel.length > 0">
+                    <div ng-repeat="dspMsg in msgCtrl.ngModel track by $index" ng-bind="dspMsg"></div>
+                  </div>
+                </message>
+              </div>
+            </div>
+            </fieldset>
+        </form>
+    </process>
 </div>
 <!-- InstanceEndEditable -->
 </div>

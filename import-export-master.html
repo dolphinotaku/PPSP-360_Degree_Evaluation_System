@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Develop |</title>
+<title>360 Evaluation | Import/Export Master</title>
 <!-- InstanceEndEditable -->
 <link rel="icon" type="image/png" href="images/logo48.png" />
 <link rel="stylesheet" type="text/css" href="css/body.css">
@@ -124,13 +124,76 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
 <nav class="navbar navbar-default" role="navigation">
   <div class="container">
   <!-- InstanceBeginEditable name="header" -->
-    <div class="navbar-header"> <a class="navbar-brand" href="#"> <img alt="Brand" width="20" src="images/download.png"> </a>
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-      <p class="navbar-text">Development</p>
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">360° Evaluation System</a>
     </div>
     <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
+      <ul class="nav navbar-nav" id="bs-example-navbar-collapse-1">
         <li><a href="main-menu.html">Home <span class="fa fa-home fa-lg"></span></a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Evaluation <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">Evaluation Master</li>
+            <li><a href="create-evaluation.html">Create</a></li>
+            <li><a href="amend-evaluation.html">Amend</a></li>
+            <li><a href="delete-evaluation.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Activate Evaluation</li>
+            <li><a href="process-gen-eva-proposal.html">Generate Evaluation Proposal</a></li>
+            <li><a href="create-evaluation-entry.html">360 Degree Evaluation Entry</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Report</li>
+            <li><a href="Individual-report.html">Individual Report(Self)</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Staff <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">Staff Profile</li>
+            <li><a href="create-staff-profile.html">Create</a></li>
+            <li><a href="amend-staff-profile.html">Amend</a></li>
+            <li><a href="delete-staff-profile.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Utility</li>
+            <li><a href="import-export-master.html">Master Import/Export</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Master <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">Utility</li>
+            <li><a href="import-export-master.html">Master Import/Export</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Vendor</li>
+            <li><a href="create-vendor.html">Create</a></li>
+            <li><a href="amend-vendor.html">Amend</a></li>
+            <li><a href="delete-vendor.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Department</li>
+            <li><a href="create-department.html">Create</a></li>
+            <li><a href="amend-department.html">Amend</a></li>
+            <li><a href="delete-department.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Staff Grade</li>
+            <li><a href="create-staffgrade.html">Create</a></li>
+            <li><a href="amend-staffgrade.html">Amend</a></li>
+            <li><a href="delete-staffgrade.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Position</li>
+            <li><a href="create-position.html">Create</a></li>
+            <li><a href="amend-position.html">Amend</a></li>
+            <li><a href="delete-position.html">Delete</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="personal-profile.html">Personal profile <span class="fa fa-user fa-lg"></span></a></li>
         <li><a href="#" logout>Logout <span class="fa fa-sign-out fa-lg"></span></a></li>
       </ul>
     </div>
