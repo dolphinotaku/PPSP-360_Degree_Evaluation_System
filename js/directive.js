@@ -483,7 +483,7 @@ app.directive('pageview', ['$rootScope',
                 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
                 var recordCount = Object.keys(data_or_JqXHR.ActionResult.data).length;
                 // 20170312, keithpoon, fixed: end page problem caused when the record counts is the multiple of 10
-                if(!data_or_JqXHR.ActionResult.data || recordCount < $rootScope.serEnv.phpRecordLimit || recordCount == 0){
+                if(!data_or_JqXHR.ActionResult.data || (recordCount < $rootScope.serEnv.phpRecordLimit && $scope.getNextPageTimes > 1) || recordCount == 0){
                     $scope.maxRecordsCount = $scope.sortedDataSource.length;
                     if($scope.getNextPageTimes == 1)
                         $scope.DisplayMessage = "Record Not Found.";
