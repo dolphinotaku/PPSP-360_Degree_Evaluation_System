@@ -210,7 +210,7 @@ app.directive('pageview', ['$rootScope',
             if(typeof $scope.SetCriteriaBeforeGet == "function"){
                 criteriaObj = $scope.SetCriteriaBeforeGet(pageNum, lastRecordIndex, criteriaObj);
             }
-            $scope.GetNextPageRecords(pageNum, lastRecordIndex, criteriaObj);
+            return criteriaObj;
         }
 
         $scope.Initialize = function(){
@@ -386,7 +386,9 @@ app.directive('pageview', ['$rootScope',
                     
 //                    console.log("TryToCallSetCriteriaBeforeGet() - pageNum: "+pageNum+", lastRecordIndex: "+lastRecordIndex+", ")
 
-                    TryToCallSetCriteriaBeforeGet(pageNum, lastRecordIndex, criteriaObj);
+                    var newCriteriaObj = TryToCallSetCriteriaBeforeGet(pageNum, lastRecordIndex, criteriaObj);
+                    
+                    $scope.GetNextPageRecords(pageNum, lastRecordIndex, newCriteriaObj);
 
 	    			return;
 	    		}
@@ -401,16 +403,15 @@ app.directive('pageview', ['$rootScope',
 
     		var recordNumberStart = (pageNum - 1) * numOfRecordPerPage;
     		var recordNumberEnd = pageNum * numOfRecordPerPage - 1;
-
+            
             var currentPageRecords = [];
-//            $scope.currentPageRecords = [];
-//            $ctrl.ngModel = [];
-
+            $scope.currentPageRecords = [];
+            $ctrl.ngModel = [];
     		if(typeof($scope.sortedDataSource[recordNumberStart]) == "undefined"){
 
     		}else{
 	    		// assign records to current page according to the page number
-	    		for(var recordCounter = recordNumberStart; recordCounter < recordNumberEnd; recordCounter++){
+	    		for(var recordCounter = recordNumberStart; recordCounter <=recordNumberEnd; recordCounter++){
 
 	    			if(recordCounter >= $scope.maxRecordsCount && $scope.maxRecordsCount > 0)
 	    				break;
@@ -419,13 +420,8 @@ app.directive('pageview', ['$rootScope',
 	    			    currentPageRecords[currentPageRecords.length] = newRow;
 	    		}
     		}
-
-//    		console.log('currentPageRecords.length:'+currentPageRecords.length);
-    		if(currentPageRecords && currentPageRecords.length){
-    			$ctrl.ngModel = $scope.currentPageRecords = currentPageRecords;
-    		}else{
-    			$scope.DisplayMessage = "End of records.";
-    		}
+            
+            $ctrl.ngModel = $scope.currentPageRecords = currentPageRecords;
     	}
 
     	$scope.GetNextPageRecords = function(pageNum, lastRecordIndex, criteriaObj){
@@ -463,25 +459,21 @@ app.directive('pageview', ['$rootScope',
 
             var request = HttpRequeset.send(requestOption);
             var httpResponseObj = {};
-            $scope.getNextPageTimes+1;
+            $scope.getNextPageTimes+=1;
             request.then(function(responseObj) {
                 var data_or_JqXHR = responseObj.data;
                 httpResponseObj = responseObj;
                 $scope.UnLockAllControls();
                 
-                if(data_or_JqXHR.Status != "success")
-                    throw data_or_JqXHR;
-                
-                if(typeof(data_or_JqXHR.ActionResult.data) == "undefined")
-                {
-                    if($scope.getNextPageTimes == 1){
-                        $scope.DisplayMessage = "Record Not Found.";
-                    }else{
-                        $scope.DisplayMessage = "End of records.";
-                    }
-
-                    $scope.maxRecordsCount = $scope.dataSource.length;
-                }
+//                if(data_or_JqXHR.Status != "success")
+//                    throw data_or_JqXHR;
+//                
+//                if(typeof(data_or_JqXHR.ActionResult.data) == "undefined")
+//                {
+//                    if($scope.getNextPageTimes == 1){
+//                        $scope.DisplayMessage = "Record Not Found.";
+//                    }
+//                }
 
                 SetRecordStructure(data_or_JqXHR);
                 AppendToDataSource(pageNum, data_or_JqXHR);
@@ -490,9 +482,17 @@ app.directive('pageview', ['$rootScope',
                 // Object.keys Browser compatibility
                 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
                 var recordCount = Object.keys(data_or_JqXHR.ActionResult.data).length;
-                if(recordCount < $rootScope.serEnv.phpRecordLimit){
-                     // $scope.maxRecordsCount = recordCount;
-                     $scope.maxRecordsCount = $scope.sortedDataSource.length;
+                // 20170312, keithpoon, fixed: end page problem caused when the record counts is the multiple of 10
+                if(!data_or_JqXHR.ActionResult.data || recordCount < $rootScope.serEnv.phpRecordLimit || recordCount == 0){
+                    $scope.maxRecordsCount = $scope.sortedDataSource.length;
+                    if($scope.getNextPageTimes == 1)
+                        $scope.DisplayMessage = "Record Not Found.";
+                    else
+                        $scope.DisplayMessage = "End of records.";
+                    // 20170312, keithpoon, fixed: page number goes 1 after the ended page number because the page number always +1 in the GotoNextPageRecord()
+                    $scope.pageNum-=1;
+                }else{
+                    DisplayPageNum(pageNum);
                 }
             }, function(reason) {
               console.error("Fail in GetNextPageRecords() - "+tagName + ":"+$scope.programId)
@@ -511,7 +511,6 @@ app.directive('pageview', ['$rootScope',
                         httpResponseObj.status);
                 }
                 
-                DisplayPageNum(pageNum);
             }).catch(function(e) {
               Security.HttpPromiseFail(e);
             });
@@ -754,52 +753,120 @@ app.directive('entry', ['$rootScope',
             $scope.RestoreNgModel();
             $scope.FindNClearChildEditbox();
         }
+		
+		$scope.SetNgModel = function(dataRecord){
+			var dataJson = {};
+			//dataJson.data = {};
+			//dataJson.data.Items = [];
+			//dataJson.data.Items[1] = dataRecord;
+			//console.dir(dataJson)
+			//SetNgModel(dataJson);
+			SetNgModel(dataRecord);
+		}
 
         function SetNgModel(dataJson){
-        	var items = dataJson.data.Items[1];
-        	var itemsColumn = dataJson.data.DataColumns;
-        	// var itemsDatatype = dataJson.data.itemsDataType;
+//        	var items = dataJson.data.Items[1];
+//        	var itemsColumn = dataJson.data.DataColumns;
+            var dataRecord = dataJson.ActionResult.data[0];
+            
+            var tableSchema = dataJson.ActionResult.table_schema;
 
-            if(items == null || typeof(items) == "undefined"){
-                console.log("Responsed {data:items{}} is null")
-                return;
-            }
-
-        	for(var colIndex in itemsColumn){
-        		var columnName = itemsColumn[colIndex];
+        	for(var rowIndex in tableSchema){
+        		var row = tableSchema[rowIndex];
+                var columnName = row.Field;
+        		var colDataType = Core.ConvertMySQLDataType(row.Type);
 
                 var isSystemField = Core.IsSystemField(columnName);
                 if(isSystemField)
                     continue;
+                
+                var newColumn = dataRecord[columnName];
+                var dataValue = dataRecord[columnName];
 
-        		var colDataType = Core.ConvertMySQLDataType(itemsColumn[colIndex].type);
-
-        		// is column exists in ngModel
-        		if(typeof($ctrl.ngModel[columnName]) == "undefined"){
+//        		// is column exists in ngModel
+        		if(typeof(dataValue) == "undefined" || !dataValue){
         			if(colDataType == "string"){
-        				$ctrl.ngModel[columnName] = "";
+        				dataValue = "";
         			}
         			else if (colDataType == "date"){
-        				$ctrl.ngModel[columnName] = new Date(0, 0, 0);
+        				dataValue = new Date(0, 0, 0);
         			}
         			else if (colDataType == "double"){
-//        				$ctrl.ngModel[columnName] = 0.0;
+        				dataValue = 0.0;
         			}
         		}
-        		var newColumn = $ctrl.ngModel[columnName];
-
+                
+                console.log(typeof dataValue);
+                console.log(dataValue);
+                
         		if (colDataType == "date"){
-    				newColumn = new Date(items[colIndex]);
+                    if(typeof dataValue == "string"){
+                        var dateArray = dataValue.split("-");
+                        var year = dateArray[0]; var month = dateArray[1]; var day = dateArray[2];
+                        year = parseInt(year);
+                        month = parseInt(month);
+                        day = parseInt(day);
+                        newColumn = new Date(year, month, day);
+                    }else{
+                        newColumn = dataValue;
+                    }
     			}
     			else if (colDataType == "double"){
-    				newColumn = parseFloat(items[colIndex]);
+    				newColumn = parseFloat(dataValue);
     			}
-    			else{
-    				newColumn = items[colIndex];
-    			}
+//    			else{
+//    				newColumn = items[colIndex];
+//    			}
 
                 $ctrl.ngModel[columnName] = newColumn;
         	}
+
+//            if(items == null || typeof(items) == "undefined"){
+//                console.log("Responsed {data:items{}} is null")
+//                return;
+//            }
+//
+//        	for(var colIndex in itemsColumn){
+//        		var columnName = itemsColumn[colIndex];
+//
+//                var isSystemField = Core.IsSystemField(columnName);
+//                if(isSystemField)
+//                    continue;
+//
+//        		var colDataType = Core.ConvertMySQLDataType(itemsColumn[colIndex].type);
+//
+//        		// is column exists in ngModel
+//        		if(typeof($ctrl.ngModel[columnName]) == "undefined"){
+//        			if(colDataType == "string"){
+//        				$ctrl.ngModel[columnName] = "";
+//        			}
+//        			else if (colDataType == "date"){
+//        				$ctrl.ngModel[columnName] = new Date(0, 0, 0);
+//        			}
+//        			else if (colDataType == "double"){
+////        				$ctrl.ngModel[columnName] = 0.0;
+//        			}
+//        		}
+//        		var newColumn = $ctrl.ngModel[columnName];
+//
+//        		if (colDataType == "date"){
+//					console.log(typeof items[colIndex]);
+//					var dateArray = items[colIndex].split("-");
+//					var year = dateArray[0]; var month = dateArray[1]; var day = dateArray[2];
+//					year = parseInt(year);
+//					month = parseInt(month);
+//					day = parseInt(day);
+//    				newColumn = new Date(year, month, day);
+//    			}
+//    			else if (colDataType == "double"){
+//    				newColumn = parseFloat(items[colIndex]);
+//    			}
+//    			else{
+//    				newColumn = items[colIndex];
+//    			}
+//
+//                $ctrl.ngModel[columnName] = newColumn;
+//        	}
 
         }
         function GetTableStructure(){
@@ -1047,7 +1114,7 @@ app.directive('entry', ['$rootScope',
             request.then(function(responseObj) {
                 var data_or_JqXHR = responseObj.data;
                 // need to handle if record not found.
-                $ctrl.ngModel = data_or_JqXHR.ActionResult.data[0];
+				SetNgModel(data_or_JqXHR);
             }, function(reason) {
               console.error("Fail in FindData() - "+tagName + ":"+$scope.programId)
               Security.HttpPromiseFail(reason);
@@ -1121,6 +1188,7 @@ app.directive('entry', ['$rootScope',
                 return;
             }
             
+            $scope.ShowLoadModal();
             SubmitData();
         }
 		
@@ -1218,10 +1286,11 @@ app.directive('entry', ['$rootScope',
             }).finally(function() {
                 // Always execute unlock on both error and success
                 $scope.UnLockAllControls();
-
+                $scope.HideLoadModal();
                     
                 MessageService.addMsg(msg);
                 SubmitDataResult(httpResponseObj, httpResponseObj.status);
+                $scope.HideLoadModal();
                 
                 if(typeof $scope.CustomSubmitDataResult == "function"){
                     $scope.CustomSubmitDataResult(httpResponseObj, 
@@ -2055,8 +2124,9 @@ app.directive('export', [
     'Core', 
     'Security', 
     'LockManager', 
+    'LoadingModal',
     'HttpRequeset', 
-    'MessageService', function($rootScope, $timeout, Core, Security, LockManager, HttpRequeset, MessageService) {
+    'MessageService', function($rootScope, $timeout, Core, Security, LockManager, LoadingModal, HttpRequeset, MessageService) {
 
     function ExportConstructor($scope, $element, $attrs) {
 
@@ -2149,6 +2219,7 @@ app.directive('export', [
             }).finally(function(resultObj, resultObj1, resultObj2, resultObj3) {
                 // Always execute this on both error and success
                 $scope.UnLockAllControls();
+                $scope.HideLoadModal();
 
                 // SubmitDataResult(data_or_JqXHR, textStatus, jqXHR_or_errorThrown);
                 // if(typeof $scope.CustomSubmitDataResult == "function"){
@@ -2206,6 +2277,7 @@ app.directive('export', [
             var globalCriteria = $rootScope.globalCriteria;
 
             $scope.LockAllControls();
+            $scope.ShowLoadModal();
             
             if(typeof $scope.ExportData == "function"){
                 $scope.ExportData($ctrl.ngModel, $scope, $element, $attrs, $ctrl);
@@ -2226,6 +2298,13 @@ app.directive('export', [
             $timeout(function(){
                 UnLockAllControls();
                 }, 2000); // (milliseconds),  1s = 1000ms
+        }
+        
+        $scope.ShowLoadModal = function(){
+            LoadingModal.showModal();
+        }
+        $scope.HideLoadModal = function(){
+            LoadingModal.hideModal();
         }
 
         function LockAllControls(){
@@ -2350,8 +2429,9 @@ app.directive('import', [
     'Core', 
     'Security', 
     'LockManager', 
+    'LoadingModal',
     'HttpRequeset', 
-    'MessageService', function($rootScope, $timeout, Core, Security, LockManager, HttpRequeset, MessageService) {
+    'MessageService', function($rootScope, $timeout, Core, Security, LockManager, LoadingModal, HttpRequeset, MessageService) {
     function ImportConstructor($scope, $element, $attrs) {
         var constructor = this;
         var $ctrl = $scope.importCtrl;
@@ -2447,6 +2527,7 @@ app.directive('import', [
             }).finally(function() {
                 // Always execute this on both error and success
                 $scope.UnLockAllControls();
+                $scope.HideLoadModal();
 
                 SubmitDataResult(data_or_JqXHR, textStatus, jqXHR_or_errorThrown);
                 if(typeof $scope.CustomSubmitDataResult == "function"){
@@ -2481,6 +2562,7 @@ app.directive('import', [
             // var globalCriteria = $rootScope.globalCriteria;
 
             $scope.LockAllControls();
+            $scope.ShowLoadModal();
             
             ImportData(uploadFileInfo);
 
@@ -2498,6 +2580,13 @@ app.directive('import', [
             $timeout(function(){
                 UnLockAllControls();
                 }, 2000); // (milliseconds),  1s = 1000ms
+        }
+        
+        $scope.ShowLoadModal = function(){
+            LoadingModal.showModal();
+        }
+        $scope.HideLoadModal = function(){
+            LoadingModal.hideModal();
         }
 
         function LockAllControls(){
@@ -2577,7 +2666,6 @@ app.directive('import', [
         },
     };
 }]);
-
 
 app.directive('upload', [
     '$rootScope',
@@ -2871,7 +2959,7 @@ app.directive('message', ['$rootScope',
                     if($scope.autoClose)
                         $timeout(function(){
                             MessageService.shiftMsg();
-                        }, 5000); // (milliseconds),  1s = 1000ms
+                        }, 7000); // (milliseconds),  1s = 1000ms
 //                }
             }
           }
@@ -3201,22 +3289,22 @@ app.directive('process', ['$rootScope',
             var editMode;
             var programID;
 
-            function findEditMode() {
-                var object = $scope.editMode = FindEditModeEnum($attrs.editMode);
-                return object;
-            }
+//            function findEditMode() {
+//                var object = $scope.editMode = FindEditModeEnum($attrs.editMode);
+//                return object;
+//            }
             function findProgramID(){
                 var object = $attrs.programId;
                 return object;
             }
 
             return {
-                getEditMode: function () {
-                    if (!editMode) {
-                        editMode = findEditMode();
-                    }
-                    return editMode;
-                },
+//                getEditMode: function () {
+//                    if (!editMode) {
+//                        editMode = findEditMode();
+//                    }
+//                    return editMode;
+//                },
                 getProgramID: function(){
                     var isProgramIdFound = false;
                     if(!programID){
@@ -3244,29 +3332,6 @@ app.directive('process', ['$rootScope',
             
             $scope.DisplayMessageList = MessageService.getMsg();
             $ctrl.ngModel = {};
-        }
-
-        $scope.BackupNgModel = function(){ BackupNgModel(); }
-        $scope.RestoreNgModel = function(){ RestoreNgModel(); }
-		
-        function BackupNgModel(){
-            backupNgModelObj = jQuery.extend([], $ctrl.ngModel);
-        }
-
-        function RestoreNgModel(){
-            // 20170108, keithpoon, must use option 2, otherwise will break the StatusChange of the watch listener
-            // Option 1 will stick the ngModel with the defaulted value object 
-            // Option 2 will keep the customized value on the page, such is the prefered language setting
-
-            // Option 1: clone the default object as ngModel
-//            $ctrl.ngModel = angular.copy(backupNgModelObj);
-
-            // Option 2: append and overwrite the default value on ngModel
-             jQuery.extend(true, $ctrl.ngModel, backupNgModelObj);
-        }
-        
-        $scope.ResetForm = function(){
-            $scope.RestoreNgModel();
         }
 		
         function TryToCallInitDirective(){
@@ -3301,13 +3366,11 @@ app.directive('process', ['$rootScope',
             if(!ValidateSubmitData()){
                 return;
             }
-            
+            $scope.ShowLoadModal();
             SubmitData();
         }
         function ValidateSubmitData(){
             var isValid = true;
-        	var editMode = DirectiveProperties.getEditMode();
-
         	// if Buffer invalid, cannot send request
         	var isBufferValid = true;
 			if(typeof $scope.ValidateBuffer == "function"){
@@ -3325,7 +3388,6 @@ app.directive('process', ['$rootScope',
         function SubmitData(){
             var httpResponseObj = {};
             var submitPromise;
-        	var editMode = DirectiveProperties.getEditMode();
             var msg = "";
             
 				if(typeof $scope.ProcessData == "function"){
@@ -3341,7 +3403,6 @@ app.directive('process', ['$rootScope',
 
 					MessageService.setMsg(data_or_JqXHR.ActionResult.processed_message);
                     
-                    $scope.ResetForm();
                 }, function(reason) {
                   console.error(tagName + ":"+$scope.programId + " - Fail in ProcessData()")
                   throw reason;
@@ -3355,9 +3416,10 @@ app.directive('process', ['$rootScope',
             }).finally(function() {
                 // Always execute unlock on both error and success
                 $scope.UnLockAllControls();
+                $scope.HideLoadModal();
 
-                    
-                MessageService.addMsg(msg);
+                if(msg.length > 0)
+                    MessageService.addMsg(msg);
                 SubmitDataResult(httpResponseObj, httpResponseObj.status);
                 
                 if(typeof $scope.CustomSubmitDataResult == "function"){
@@ -3376,7 +3438,6 @@ app.directive('process', ['$rootScope',
             return submitPromise;
         }
         
-
         function ProcessData(recordObj){
         	var clientID = Security.GetSessionID();
         	var programId = $scope.programId.toLowerCase();
@@ -3482,16 +3543,6 @@ app.directive('process', ['$rootScope',
             }
         }
 
-        function TryToCallIsLimitModelStrictWithSchema(){
-            var isLimitModelStrictWithSchema = false;
-            if(typeof $scope.IsLimitModelStrictWithSchema == "function"){
-                isLimitModelStrictWithSchema = $scope.IsLimitModelStrictWithSchema($scope, $element, $attrs, $ctrl);
-            }else{
-                isLimitModelStrictWithSchema = IsLimitModelStrictWithSchema();
-            }
-            return isLimitModelStrictWithSchema;
-        }
-
         function InitDirective(){
             console.log("scope.$id:"+$scope.$id+", may implement $scope.InitDirective() function in webapge");
         }
@@ -3509,9 +3560,6 @@ app.directive('process', ['$rootScope',
 			return true;
 		}
         
-        function IsLimitModelStrictWithSchema(){
-            return true;
-        }
         function CustomGetDataResult(data_or_JqXHR, textStatus, jqXHR_or_errorThrown){
             var progID = $scope.programId;
             //console.log("scope.$id:"+$scope.$id+", programId:"+progID+", must implement $scope.CustomGetDataResult() function in webapge");
@@ -3519,109 +3567,10 @@ app.directive('process', ['$rootScope',
         function SubmitDataResult(data_or_JqXHR, textStatus, jqXHR_or_errorThrown){
 
         }
-
-        /**
-         * Valid the key columns
-         * @param {Object} recordObj - provide the record which is going to perform CRUD
-         * @return {bool} - true if key columns are exists, not null and empty. false otherwise
-         */
-        function IsKeyInDataRow(recordObj){
-            var tbStructure = $scope.tableStructure;
-            var itemsColumn = tbStructure.DataColumns;
-            var keyColumn = tbStructure.KeyColumns;
-
-            var isAllKeyExists = true;
-            for(var keyIndex in keyColumn){
-                var keyColName = keyColumn[keyIndex];
-                if(typeof(recordObj[keyColName]) == "undefined"){
-                    isAllKeyExists = false;
-                    continue;
-                }
-                // find the data type
-                var dataTypeFound = false;
-                var keyColDataType = "";
-                for (var colIndex in itemsColumn) {
-                    var colName = colIndex;;
-                    var colDataType = Core.ConvertMySQLDataType(itemsColumn[colIndex].type);
-                    var colValue = recordObj[colName];
-                    if(keyColName == colName){
-                        dataTypeFound = true;
-                        keyColDataType = colDataType;
-                        break;
-                    }
-                }
-
-                if(keyColDataType == "string"){
-                    if(recordObj[keyColName] == null || recordObj[keyColName] == "")
-                    {
-                        isAllKeyExists = false;
-                        continue;
-                    }
-                }
-
-            }
-
-            return isAllKeyExists;
-        }
-
+        
         $scope.Initialize();
     }
 
-    function FindEditModeEnum(attrEditMode){
-        var globalCriteria = $rootScope.globalCriteria;
-        var isEditModeFound = false;
-        var isEditModeNumeric = false;
-        var editMode = 0;
-
-        if(typeof(attrEditMode) != undefined){
-            if(attrEditMode != null && attrEditMode !=""){
-                isEditModeFound = true;
-            }
-        }
-        if(isEditModeFound){
-            isEditModeNumeric = !isNaN(parseInt(attrEditMode));
-        }
-        if(!isEditModeFound){
-            editMode = globalCriteria.editMode.None;
-        }else{
-            if(isEditModeNumeric){
-                editMode = attrEditMode;
-            }
-            else{
-                attrEditMode = attrEditMode.toLowerCase();
-                if(attrEditMode == "none"){
-                    editMode = globalCriteria.editMode.None;
-                }
-                else if(attrEditMode == "create"){
-                    editMode = globalCriteria.editMode.Create;
-                }
-                else if(attrEditMode == "amend"){
-                    editMode = globalCriteria.editMode.Amend;
-                }
-                else if(attrEditMode == "delete"){
-                    editMode = globalCriteria.editMode.Delete;
-                }
-                else if(attrEditMode == "view"){
-                    editMode = globalCriteria.editMode.View;
-                }
-                else if(attrEditMode == "copy"){
-                    editMode = globalCriteria.editMode.Copy;
-                }
-                else if(attrEditMode == "null"){
-                    editMode = globalCriteria.editMode.Null;
-                }
-                else if(attrEditMode.indexOf("amend") >-1 && 
-                        attrEditMode.indexOf("delete") >-1 )
-                {
-                        editMode = globalCriteria.editMode.AmendAndDelete;
-                }
-                else{
-                    throw ("Unable to identify the edit mode '"+attrEditMode+"' on process");
-                }
-            }
-        }
-        return editMode;
-    }
     function templateFunction(tElement, tAttrs) {
         var globalCriteria = $rootScope.globalCriteria;
 
@@ -3671,27 +3620,6 @@ app.directive('process', ['$rootScope',
                     transclude(scope, function (clone, scope) {
                         iElement.find('.custom-transclude').append(clone);
                     })
-
-                    /*
-                    // lock controls should put post here, 
-                    var globalCriteria = $rootScope.globalCriteria;
-                    if(scope.editMode == globalCriteria.editMode.None || 
-                        scope.editMode == globalCriteria.editMode.Null ||
-                        scope.editMode == globalCriteria.editMode.Create ||
-                        scope.editMode == globalCriteria.editMode.View ||
-                        scope.editMode == globalCriteria.editMode.Delete 
-                    ){
-                        // require table structure, lock all control.
-                        // the controls will be unlock after table structre received.
-//                        console.log("Mode is [View | Delete | None | Null], lock all controls")
-                        iElement.ready(function() {
-                            if(scope.editMode == globalCriteria.editMode.Delete)
-                                scope.LockAllInputBox();
-                            else
-                                scope.LockAllControls();
-                        })
-                    }
-                    */
 		        }
 		    }
 		    // or
