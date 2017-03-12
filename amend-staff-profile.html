@@ -29,6 +29,7 @@
 <script src="third-party/ng-file-upload-12.2.12/demo/src/main/webapp/js/ng-file-upload-shim.js"></script>
 <script src="third-party/ng-file-upload-12.2.12/demo/src/main/webapp/js/ng-file-upload.js"></script>
 <!-- InstanceBeginEditable name="head" -->
+<script src="js/menu.js"></script>
 <script>
 // jQuery
 $(function() {
@@ -58,6 +59,7 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
 		$scope.employStatus = employStatus;
 	}
 	Initialize();
+	$scope.staffEntryCtrl;
 	
 	$scope.EventListener = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried EventListener()");
@@ -69,6 +71,9 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
 		if($scope.directiveScopeDict[hashID] == null || typeof($scope.directiveScopeDict[hashID]) == "undefined"){
 		  $scope.directiveScopeDict[hashID] = scope;
 		  $scope.directiveCtrlDict[hashID] = controller;
+		  
+		  if(prgmID == "ee01sf")
+			$scope.staffEntryCtrl = scope;
 		}
 		
 		//http://api.jquery.com/Types/#Event
@@ -102,23 +107,34 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
 		var record = controller.ngModel;
 		var msg = [];
 		
+        var staffID = record.StaffID;
 		var employmentDate = record.EmploymentDate;
 		var probationEndDate = record.ProbationEndDate;
 		var birthday = record.BirthDay;
 		
+		// validate staffID
+		if(!staffID || staffID == ""){
+			isValid = false;
+			msg.push("Please select a staff record");
+			MessageService.setMsg(msg);
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            return false;
+		}
+		
 		// validate Probation End Eate should on or before the Employment Date
-		if(probationEndDate.getDate() < employmentDate.getDate()){
+		if(probationEndDate.getTime() < employmentDate.getTime()){
 			isValid = false;
 			msg.push("Probation End Date should on or before the Employment Date");
 		}
 		// validate birthday should before the employment date
-		if(birthday.getDate() >= employmentDate.getDate()){
+		if(birthday.getTime() >= employmentDate.getTime()){
 			isValid = false;
 			msg.push("Birthday should before the Employment Date");
 		}
 		
 		if(!isValid){
 			MessageService.setMsg(msg);
+            $("html, body").animate({ scrollTop: 0 }, "slow");
 		}
 		
         return isValid;
@@ -177,6 +193,7 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
         var prgmID = scope.programId;
         if(prgmID == "es01sg"){
           $scope.directiveScopeDict["ew01sg"].ClearNRefreshData();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
         }
     }
 }]);
@@ -201,26 +218,26 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
       </button>
       <a class="navbar-brand" href="#">360° Evaluation System</a>
     </div>
-    <div class="navbar-collapse collapse">
+    <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav" id="bs-example-navbar-collapse-1">
         <li><a href="main-menu.html">Home <span class="fa fa-home fa-lg"></span></a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Evaluation <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li class="dropdown-header">Evaluation Master</li>
-            <li><a href="create-evaluation.html">Create</a></li>
-            <li><a href="amend-evaluation.html">Amend</a></li>
-            <li><a href="delete-evaluation.html">Delete</a></li>
-            <li role="separator" class="divider"></li>
-            <li class="dropdown-header">Activate Evaluation</li>
-            <li><a href="process-gen-eva-proposal.html">Generate Evaluation Proposal</a></li>
+            <li class="dropdown-header menu-admin">Evaluation Master</li>
+            <li class="menu-admin"><a href="create-evaluation.html">Create</a></li>
+            <li class="menu-admin"><a href="amend-evaluation.html">Amend</a></li>
+            <li class="menu-admin"><a href="delete-evaluation.html">Delete</a></li>
+            <li role="separator" class="divider menu-admin"></li>
+            <li class="dropdown-header menu-admin">Activate Evaluation</li>
+            <li class="menu-admin"><a href="process-gen-eva-proposal.html">Generate Evaluation Proposal</a></li>
             <li><a href="create-evaluation-entry.html">360 Degree Evaluation Entry</a></li>
             <li role="separator" class="divider"></li>
             <li class="dropdown-header">Report</li>
             <li><a href="Individual-report.html">Individual Report(Self)</a></li>
           </ul>
         </li>
-        <li class="dropdown">
+        <li class="dropdown menu-admin">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Staff <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li class="dropdown-header">Staff Profile</li>
@@ -229,10 +246,10 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
             <li><a href="delete-staff-profile.html">Delete</a></li>
             <li role="separator" class="divider"></li>
             <li class="dropdown-header">Utility</li>
-            <li><a href="import-export-master.html">Master Import/Export</a></li>
+            <li><a href="import-export-staff.html">Staff Import/Export</a></li>
           </ul>
         </li>
-        <li class="dropdown">
+        <li class="dropdown menu-admin">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Master <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li class="dropdown-header">Utility</li>
@@ -285,6 +302,9 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
 <!-- site position end --> 
 <div class="container">
 <!-- InstanceBeginEditable name="intro" -->
+<div ng-controller="mainCtrl">
+	<process ng-model="processModel" program-id="ei01wu"></process>
+</div>
 <div ng-controller="createPositionController as createDeptCtrl" style="max-width: 850px;">
         <div class="panel panel-default">
           <div class="panel-heading">Process Message</div>

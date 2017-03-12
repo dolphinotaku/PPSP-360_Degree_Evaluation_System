@@ -9,15 +9,10 @@ function ExportData($httpRequest){
 	$requestData = $httpRequest; //->Data->Header;
 
 	// export multiple table
-//	$excelManager->AddTable("staff");
-	$excelManager->AddTable("vendor");
-	$excelManager->AddTable("department");
-	$excelManager->AddTable("staffgrade");
-	$excelManager->AddTable("position");
+	$excelManager->AddTable("staff");
 	
 	// set excel header sequence
-//	$excelManager->SetSkipExportColumn("staff", "UserID");
-	$excelManager->SetSkipExportColumn("vendor", "UserID");
+	$excelManager->SetSkipExportColumn("staff", "UserID");
 
 	//$json_string = $excelManager->GetSkipExportColumn();
 	//echo json_encode($json_string, JSON_PRETTY_PRINT);
@@ -33,7 +28,7 @@ function ExportData($httpRequest){
 
 	// custom the file name to be export, need not include extension
 	//$excelManager->filename = "test-excel-export" . date('Y-m-d_His');
-	$excelManager->filename = "Master Table Template";
+	$excelManager->filename = "Staff Profile Template";
 
 	// call Export will download directly, cannot see the content
 	//echo "export ".$excelManager->table." table in ".$excelManager->outputAsFileType." file";
@@ -50,11 +45,7 @@ function ImportData($httpRequest){
 	$importManager = new ExcelManager();
 	$importManager->Initialize();
 	
-//	$importManager->AddTable("staff");
-	$importManager->AddTable("vendor");
-	$importManager->AddTable("department");
-	$importManager->AddTable("staffgrade");
-	$importManager->AddTable("position");
+	$importManager->AddTable("staff");
 
 	$responseArray = Core::CreateResponseArray();
 

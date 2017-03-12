@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>360 Evaluation | Import/Export Master</title>
+<title>360 Evaluation | Import/Export Staff</title>
 <!-- InstanceEndEditable -->
 <link rel="icon" type="image/png" href="images/logo48.png" />
 <link rel="stylesheet" type="text/css" href="css/body.css">
@@ -44,7 +44,7 @@ app.run(function ($rootScope, $log, Security) {
 	Security.RequiresAuthorization();
 });
 
-app.controller('createDepartmentController', ['$scope', 'Security', function ($scope, Security, $rootScope) {
+app.controller('imExStaffController', ['$scope', 'Security', function ($scope, Security, $rootScope) {
 	function Initialize(){
 		var entryForm = {};
 		
@@ -73,31 +73,18 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
 	
 	$scope.SetDefaultValue = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried SetDefaultValue()");
-		
-		controller.ngModel.nameJpn = "";
-		controller.ngModel.nameChi = "";
-		controller.ngModel.nameEng = "";
-		controller.ngModel.contentJpn = "";
-		controller.ngModel.contentChi = "";
-		controller.ngModel.contentEng = "";
 	}
 	
 	$scope.StatusChange = function(fieldName, newValue, newObj, scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried StatusChange()");
-//		console.log(fieldName);
-//		console.log(newValue);
-		
-		if(fieldName == "grade")
-			newObj.grade = newObj.grade.toUpperCase(); 
 	}
 	
 	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried ValidateBuffer()");
 		
 		//controller.ngModel.DepartmentCode = "ABC"
-		//controller.ngModel.DepartmentCode = 125
 
-    return true;
+        return true;
 	}
 	$scope.IsLimitModelStrictWithSchema = function(scope, iElement, iAttrs, controller){
 		return false;
@@ -204,7 +191,7 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
 <!-- header end -->
 <div class="container">
 <!-- InstanceBeginEditable name="page-header" -->
-<h1 class="page-header">Import / Export Master</h1>
+<h1 class="page-header">Import / Export Staff</h1>
 <!-- InstanceEndEditable -->
 <!-- site position start --> 
 <!-- InstanceBeginEditable name="position" -->
@@ -221,9 +208,9 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
 <div ng-controller="mainCtrl">
 	<process ng-model="processModel" program-id="ei01wu"></process>
 </div>
-<div ng-controller="createDepartmentController as createDeptCtrl" style="max-width: 750px;">
-	<h3>Exprot Master</h3>
-    <export ng-model="imExModel" program-id="eu01ms" ng-init="exportCtrl.ExportFileTypeAs.selectedOption = exportCtrl.ExportFileTypeAs.availableOptions[0]">
+<div ng-controller="imExStaffController as imExStaffCtrl" style="max-width: 750px;">
+	<h3>Exprot Staff Profile</h3>
+    <export ng-model="imExModel" program-id="eu01sf" ng-init="exportCtrl.ExportFileTypeAs.selectedOption = exportCtrl.ExportFileTypeAs.availableOptions[0]">
         <div>
           <label>
             <input type="radio" ng-model="exportCtrl.ExportFileTypeAs.selectedOption" ng-value="exportCtrl.ExportFileTypeAs.availableOptions[0]">
@@ -242,8 +229,8 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
         </div>
     </export>
     <hr>
-  <h3>Upload and Import Master</h3>
-  <import ng-model="importModel" program-id="eu01ms">
+  <h3>Upload and Import Staff Profile</h3>
+  <import ng-model="importModel" program-id="eu01sf">
     <form name="myForm">
       Upload excel file: 
       <upload ng-model="uploadFileInfo">
