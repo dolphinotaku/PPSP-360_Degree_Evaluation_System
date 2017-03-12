@@ -492,8 +492,8 @@ app.service('Security', ['$rootScope', 'Core', 'CookiesManager', '$cookies', 'Me
 		  dataType: "html",
 		});
 		jqxhr.done(function (data, textStatus, jqXHR) {
-			alert("logout success");
 			secure.ClearSessionNUserData();
+			alert("logout success");
 			secure.RedirectToLoginPage();
 		});
 		jqxhr.fail(function (jqXHR, textStatus, errorThrown) {

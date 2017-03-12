@@ -228,6 +228,11 @@ class SecurityManager extends DatabaseManager {
 			$this->LoginID = $this->tempLoginID;
 			$this->Password = $this->Hash($this->tempPassword);
 			$tmpResponseArray = $this->select();
+			
+			$webuserManager = new WebuserManager();
+			$webuserManager->LoginID = $this->tempLoginID;
+			$webuserManager->Password = $this->Hash($this->tempPassword);
+			$tmpResponseArray = $webuserManager->SelectGeneralUserInfo();
 
 			$tmpResponseArray["SESSION_ID"] = 0;
 			if($tmpResponseArray["num_rows"]==1){
@@ -252,9 +257,10 @@ class SecurityManager extends DatabaseManager {
 
 	function CreateSession($dataRow){
 		$_SESSION['SESSION_ID'] = session_id();
-		$_SESSION['USER_ID'] = $dataRow["userID"];
-		$_SESSION['LOGIN_ID'] = $dataRow["loginID"];
-		$_SESSION['USER_Status'] = $dataRow["status"];
+		$_SESSION['USER_ID'] = $dataRow["UserID"];
+		$_SESSION['LOGIN_ID'] = $dataRow["LoginID"];
+		$_SESSION['USER_Status'] = $dataRow["Status"];
+		$_SESSION['USER_AccountType'] = $dataRow["AccountType"];
 //		$_SESSION['USER_IsDisabled'] = $dataRow["isDisabled"];
 //		$_SESSION['USER_PermissionID'] = $dataRow["permissionID"];
         $_SESSION['USER_login_status'] = 1;

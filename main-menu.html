@@ -29,6 +29,7 @@
 <script src="third-party/ng-file-upload-12.2.12/demo/src/main/webapp/js/ng-file-upload-shim.js"></script>
 <script src="third-party/ng-file-upload-12.2.12/demo/src/main/webapp/js/ng-file-upload.js"></script>
 <!-- InstanceBeginEditable name="head" -->
+<script src="js/menu.js"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style type="text/css">
 @font-face {
@@ -96,9 +97,6 @@ app.run(function ($rootScope, $log, Security) {
 	//Security.GoToMenuIfSessionExists();
 	Security.RequiresAuthorization();
 });
-
-app.controller('testCtrl', ['$scope', '$rootScope', 'Security', function ($scope, $rootScope, Security) {
-}]);
 </script>
 <!-- InstanceEndEditable -->
 </head>
@@ -126,20 +124,20 @@ app.controller('testCtrl', ['$scope', '$rootScope', 'Security', function ($scope
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Evaluation <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li class="dropdown-header">Evaluation Master</li>
-            <li><a href="create-evaluation.html">Create</a></li>
-            <li><a href="amend-evaluation.html">Amend</a></li>
-            <li><a href="delete-evaluation.html">Delete</a></li>
-            <li role="separator" class="divider"></li>
-            <li class="dropdown-header">Activate Evaluation</li>
-            <li><a href="process-gen-eva-proposal.html">Generate Evaluation Proposal</a></li>
+            <li class="dropdown-header menu-admin">Evaluation Master</li>
+            <li class="menu-admin"><a href="create-evaluation.html">Create</a></li>
+            <li class="menu-admin"><a href="amend-evaluation.html">Amend</a></li>
+            <li class="menu-admin"><a href="delete-evaluation.html">Delete</a></li>
+            <li role="separator" class="divider menu-admin"></li>
+            <li class="dropdown-header menu-admin">Activate Evaluation</li>
+            <li class="menu-admin"><a href="process-gen-eva-proposal.html">Generate Evaluation Proposal</a></li>
             <li><a href="create-evaluation-entry.html">360 Degree Evaluation Entry</a></li>
             <li role="separator" class="divider"></li>
             <li class="dropdown-header">Report</li>
             <li><a href="Individual-report.html">Individual Report(Self)</a></li>
           </ul>
         </li>
-        <li class="dropdown">
+        <li class="dropdown menu-admin">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Staff <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li class="dropdown-header">Staff Profile</li>
@@ -151,7 +149,7 @@ app.controller('testCtrl', ['$scope', '$rootScope', 'Security', function ($scope
             <li><a href="import-export-master.html">Master Import/Export</a></li>
           </ul>
         </li>
-        <li class="dropdown">
+        <li class="dropdown menu-admin">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Master <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li class="dropdown-header">Utility</li>
@@ -204,6 +202,9 @@ app.controller('testCtrl', ['$scope', '$rootScope', 'Security', function ($scope
 <!-- site position end --> 
 <div class="container">
 <!-- InstanceBeginEditable name="intro" -->
+<div ng-controller="mainCtrl">
+	<process ng-model="processModel" program-id="ei01wu"></process>
+</div>
 <!--
 <div class="row">
     <div class="col-md-3 col-sm-4 col-xs-6">

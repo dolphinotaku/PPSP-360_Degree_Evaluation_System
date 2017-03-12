@@ -19,12 +19,20 @@ class WebuserManager extends DatabaseManager {
 		parent::setDataSchemaForSet();
 		// set construct _ index
 		parent::setArrayIndex();
-        
-        $this->isSelectAllColumns = false;
-        $this->selectWhichCols = "userID, loginID, status, isDisable, activeDate, premissionID";
 	}
 	function SetDefaultValue(){
 		parent::setDefaultValue();
+	}
+	
+	function SelectGeneralUserInfo(){
+        $this->isSelectAllColumns = false;
+        //$this->selectWhichCols = "UserID, LoginID, Status, isDisable, ActiveDate, PremissionID, AccountType";
+        $this->selectWhichCols = "UserID, LoginID, Status, ActivateDate, AccountType";
+		
+		$responseArray = $this->select();
+        $this->isSelectAllColumns = true;
+		
+		return $responseArray;
 	}
 	
     // function setColumn1($value) {
