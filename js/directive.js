@@ -1888,7 +1888,6 @@ app.directive('editbox', ['Security', '$rootScope', '$compile', function(Securit
             if(typeof($ctrl.ngModel) == "undefined" || $ctrl.ngModel == null)
                 $ctrl.ngModel = {};
 
-
 		    // check attribute programId
             var isProgramIdFound = false;
             if(typeof($attrs.programId) != undefined){
@@ -1901,6 +1900,21 @@ app.directive('editbox', ['Security', '$rootScope', '$compile', function(Securit
             }
             else
             	alert("<editbox> Must declare a attribute of program-id");
+
+		    // check attribute screenId
+            var isScreenIdFound = false;
+            if(typeof($attrs.screenId) != undefined){
+            	if($attrs.screenId != null && $attrs.screenId !=""){
+            		isScreenIdFound = true;
+            	}
+            }
+            if(isScreenIdFound){
+            	$scope.screenId = $attrs.screenId;
+            }else{
+                $scope.screenId = "";
+                if(typeof($scope.programId) != "undefined")
+                    $scope.screenId = $scope.programId;
+            }
             
             var isInRange = IsParentInRange();
             if(isInRange){
@@ -2087,11 +2101,12 @@ app.directive('editbox', ['Security', '$rootScope', '$compile', function(Securit
 		        pre: function preLink(scope, iElement, iAttrs, controller) {
                     transclude(scope, function(clone, scope) {
                         var programId = scope.programId;
+                        var screenId = scope.screenId;
                         var pageviewTemplate = ''+
                         '<div class="modal pageview-modal">'+
                         '</div>'+
                         '<pageview class="pageview-popup-list-win" ng-model="editboxDataList" program-id="'+programId+'">'+
-                            '<screen></screen>'+
+                            '<screen program-id="'+screenId+'"></screen>'+
                         '</pageview>';
 
                         var linkFn = $compile(pageviewTemplate);
