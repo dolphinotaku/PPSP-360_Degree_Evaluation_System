@@ -40,8 +40,13 @@ function GetData($requestData){
 
 	$responseArray = $positionManager->selectPage($offsetRecords);
     
+    $countResponseArray = $positionManager->count();
+    $totalRecordCount = -1;
+    if($countResponseArray["data"][0]["count"])
+        $totalRecordCount = $countResponseArray["data"][0]["count"];
+    
+    $responseArray['TotalRecordCount'] = $totalRecordCount;
 	return $responseArray;
-
 }
 
 ?>

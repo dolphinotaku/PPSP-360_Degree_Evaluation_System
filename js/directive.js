@@ -285,7 +285,8 @@ app.directive('pageview', ['$rootScope',
             $scope.currentPageRecords = {};
             $ctrl.ngModel = {};
             // $scope.maxRecordsCount = -1;
-
+            $scope.getNextPageTimes = 0;
+            
             $scope.TryToDisplayPageNum(pageNum, true);
         }
         $scope.LockAllControls = function(){
@@ -479,21 +480,30 @@ app.directive('pageview', ['$rootScope',
                 AppendToDataSource(pageNum, data_or_JqXHR);
                 SortingTheDataSource();
                 
+                
                 // Object.keys Browser compatibility
                 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
                 var recordCount = Object.keys(data_or_JqXHR.ActionResult.data).length;
                 // 20170312, keithpoon, fixed: end page problem caused when the record counts is the multiple of 10
                 if(!data_or_JqXHR.ActionResult.data || (recordCount < $rootScope.serEnv.phpRecordLimit && $scope.getNextPageTimes > 1) || recordCount == 0){
                     $scope.maxRecordsCount = $scope.sortedDataSource.length;
-                    if($scope.getNextPageTimes == 1)
+                    if($scope.getNextPageTimes == 1){
                         $scope.DisplayMessage = "Record Not Found.";
-                    else
+                    }else{
+                        if(recordCount > 0){
+                            DisplayPageNum(pageNum);
+                        }
                         $scope.DisplayMessage = "End of records.";
+                    }
                     // 20170312, keithpoon, fixed: page number goes 1 after the ended page number because the page number always +1 in the GotoNextPageRecord()
-                    $scope.pageNum-=1;
+                    if(recordCount == 0)
+                        $scope.pageNum-=1;
                 }else{
                     DisplayPageNum(pageNum);
                 }
+                
+                if(data_or_JqXHR.ActionResult.TotalRecordCount)
+                    $scope.maxRecordsCount = data_or_JqXHR.ActionResult.TotalRecordCount;
             }, function(reason) {
               console.error("Fail in GetNextPageRecords() - "+tagName + ":"+$scope.programId)
               Security.HttpPromiseFail(reason);
@@ -523,9 +533,8 @@ app.directive('pageview', ['$rootScope',
 		  // This is the change listener, called when the value returned from the above function changes
 		  function(newValue, oldValue) {
 		    if ( newValue !== oldValue ) {
-		    	var reminders = $scope.maxRecordsCount % $scope.numOfRecordPerPage;
-		    	$scope.lastPageNum = ($scope.maxRecordsCount - reminders) / 10;
-		    	if(reminders > 0)
+                $scope.lastPageNum = parseInt($scope.maxRecordsCount/$scope.numOfRecordPerPage)
+                if( $scope.maxRecordsCount % $scope.numOfRecordPerPage > 0)
 		    		$scope.lastPageNum++;
 		    }
 		  }
@@ -3102,7 +3111,7 @@ app.directive('range', ['$rootScope',
         function RangeStringChange(changeRange, ctrlModel){
             var isLocaleCompareSupport = localeCompareSupportsLocales();
             
-//            var rangeObject = $scope.GetRange();
+            var rangeObject = $scope.GetRange();
             var rangeObject = ctrlModel;
             
             var strStart = rangeObject.start;
@@ -3375,6 +3384,7 @@ app.directive('process', ['$rootScope',
         $scope.SubmitData = function(){
         	console.log("<"+$element[0].tagName+"> submitting data")
             var globalCriteria = $rootScope.globalCriteria;
+            MessageService.clear();
 
         	$scope.LockAllControls();
             

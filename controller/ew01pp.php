@@ -42,6 +42,12 @@ function GetData($requestData){
     
 	$responseArray = $staffManager->select();
     
+    $countResponseArray = $staffManager->count();
+    $totalRecordCount = -1;
+    if($countResponseArray["data"][0]["count"])
+        $totalRecordCount = $countResponseArray["data"][0]["count"];
+    
+    $responseArray['TotalRecordCount'] = $totalRecordCount;
 	return $responseArray;
 }
 

@@ -31,8 +31,7 @@ function FindData($requestData){
 }
 
 function GetData($requestData){
-	$departmentManager = new SimpleTableManager();
-    $departmentManager->Initialize("department");
+	$departmentManager = new DepartmentManager();
     
 	$offsetRecords = 0;
 	$offsetRecords = $requestData->Offset;
@@ -40,6 +39,12 @@ function GetData($requestData){
 
 	$responseArray = $departmentManager->selectPage($offsetRecords);
     
+    $countResponseArray = $departmentManager->count();
+    $totalRecordCount = -1;
+    if($countResponseArray["data"][0]["count"])
+        $totalRecordCount = $countResponseArray["data"][0]["count"];
+    
+    $responseArray['TotalRecordCount'] = $totalRecordCount;
 	return $responseArray;
 
 }

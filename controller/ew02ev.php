@@ -1,9 +1,6 @@
 <?php
 
-$errors         = array();  	// array to hold validation errors
-$data 			= array(); 		// array to pass back data
-
-$responseArray = array();
+// pageview for Individual Report to select the finished evaluation
 
 function GetTableStructure(){
 	$evaluationManager = new EvaluationManager();
@@ -35,7 +32,7 @@ function GetData($requestData){
 	$offsetRecords = $requestData->Offset;
 	$pageNum = $requestData->PageNum;
 
-	$responseArray = $evaluationManager->selectPage($offsetRecords);
+	$responseArray = $evaluationManager->SelectFinishedEvaluation($offsetRecords);
     
     $countResponseArray = $evaluationManager->count();
     $totalRecordCount = -1;

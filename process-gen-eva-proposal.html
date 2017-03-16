@@ -44,10 +44,10 @@ app.run(function ($rootScope, $log, Security) {
 	Security.RequiresAuthorization();
 });
 
-app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $rootScope) {
+app.controller('testCtrl', ['$scope', 'Security', 'MessageService', function ($scope, Security, MessageService, $rootScope) {
 	$scope.directiveScopeDict = {};
 	$scope.directiveCtrlDict = {};
-	
+    	
 	function Initialize(){
 		var entryForm = {};
 		
@@ -63,8 +63,6 @@ app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $r
 		  $scope.directiveCtrlDict[prgmID] = controller;
 		}
         
-        console.log("hello")
-		
 		//http://api.jquery.com/Types/#Event
 		//The standard events in the Document Object Model are:
 		// blur, focus, load, resize, scroll, unload, beforeunload,
@@ -91,7 +89,10 @@ app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $r
 	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried ValidateBuffer()");
 		
-		//controller.ngModel.DepartmentCode = "ABC"
+        if(Object.getOwnPropertyNames(controller.ngModel.evaluationCode).length <= 0){
+            MessageService.addMsg("Require Evaluation Code.");
+            return false;
+        }
 
         return true;
 	}
@@ -101,7 +102,7 @@ app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $r
         $scope.amendForm = sRecord;
         $scope.deleteForm = sRecord;
         
-        console.dir(sRecord)
+//        console.dir(sRecord)
     }
 
     $scope.CustomSubmitDataResult = function(responseObj, httpStatusCode, scope, element, attrs, ctrl){
@@ -143,7 +144,7 @@ app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $r
             <li class="menu-admin"><a href="amend-evaluation.html">Amend</a></li>
             <li class="menu-admin"><a href="delete-evaluation.html">Delete</a></li>
             <li role="separator" class="divider menu-admin"></li>
-            <li class="dropdown-header menu-admin">Evaluation Operation</li>
+            <li class="dropdown-header">Evaluation Operation</li>
             <li class="menu-admin"><a href="process-questionnaire-design.html">Questionnaire Design</a></li>
             <li class="menu-admin"><a href="process-gen-eva-proposal.html">Generate Evaluation Proposal</a></li>
             <li><a href="create-evaluation-entry.html">360 Degree Evaluation Entry</a></li>
@@ -223,14 +224,14 @@ app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $r
 	<process ng-model="processModel" program-id="ei01wu"></process>
 </div>
 <div ng-controller="testCtrl">
-    <process ng-model="processModel" program-id="ep01ep">
+    <process ng-model="processGenEvaModel" program-id="ep01ep">
         <form ng-submit="SubmitData()">
             <fieldset>
               <div class="form-group">
                 <div class="form-inline">
                     <div class="form-group">
                         <label for="inputEvaCode">Evaluation Code</label>
-                        <editbox ng-model="processModel.evaluationCode" program-id="ew01ev">
+                        <editbox ng-model="processGenEvaModel.evaluationCode" program-id="ew01ev">
                             <div class="input-group">
                               <input class="form-control" type="text" id="inputEvaCode" ng-model="editboxCtrl.ngModel.EvaluationCode" readonly>
                               <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="OpenPageView()"><i class="fa fa-bars"></i></button></span>
@@ -240,7 +241,7 @@ app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $r
                 </div>
               </div>
               <div class="form-group">
-                <range ng-model="processModel.deptRange">
+                <range ng-model="processGenEvaModel.deptRange">
                     <label for="inputDeptCode">Department Range</label>
                     <div class="form-inline">
                         <div class="form-group">
@@ -264,7 +265,7 @@ app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $r
               </div>
               <div class="form-group">
                 <label for="isClearAll">Clear all record fist</label>
-                <input type="checkbox" class="form-control" id="isClearAll" ng-model="processModel.IsClearAll">
+                <input type="checkbox" class="form-control" id="isClearAll" ng-model="processGenEvaModel.IsClearAll">
               </div>
               <div class="form-group">
                 <button type="submit" class="btn btn-default">Submit</button>

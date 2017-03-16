@@ -44,7 +44,7 @@ app.run(function ($rootScope, $log, Security) {
 	Security.RequiresAuthorization();
 });
     
-app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $rootScope) {
+app.controller('testCtrl', ['$scope', 'Security', 'MessageService', function ($scope, Security, MessageService, $rootScope) {
 	$scope.directiveScopeDict = {};
 	$scope.directiveCtrlDict = {};
 	
@@ -62,7 +62,7 @@ app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $r
 		  $scope.directiveScopeDict[prgmID] = scope;
 		  $scope.directiveCtrlDict[prgmID] = controller;
 		}
-		
+        		
 		//http://api.jquery.com/Types/#Event
 		//The standard events in the Document Object Model are:
 		// blur, focus, load, resize, scroll, unload, beforeunload,
@@ -82,15 +82,17 @@ app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $r
 	$scope.StatusChange = function(fieldName, newValue, newObj, scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried StatusChange()");
 		
-		if(fieldName == "DepartmentCode")
-			newObj.DepartmentCode = newObj.DepartmentCode.toUpperCase(); 
+//		if(fieldName == "DepartmentCode")
+//			newObj.DepartmentCode = newObj.DepartmentCode.toUpperCase(); 
 	}
 	
 	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried ValidateBuffer()");
 		
-		//controller.ngModel.DepartmentCode = "ABC"
-//        if(controller.ngModel.evaluationCode.EvaluationCode)
+        if(Object.getOwnPropertyNames(controller.ngModel.evaluationCode).length <= 0){
+            MessageService.addMsg("Require Evaluation Code.");
+            return false;
+        }
 
         return true;
 	}
@@ -106,31 +108,27 @@ app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $r
     $scope.CustomSubmitDataResult = function(responseObj, httpStatusCode, scope, element, attrs, ctrl){
         var prgmID = scope.programId;
         
-        
         var actionResult = responseObj.data.ActionResult;
-        console.dir(responseObj);
-//        return;
-                    saveByteArray(actionResult.filename, actionResult.FileAsBase64);
+        saveByteArray(actionResult.filename, actionResult.FileAsBase64);
     }
 }]);
-    
-    
-        function saveByteArray(fileName, b64Data) {
-            // http://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
-            var byteCharacters = atob(b64Data);
-            var byteNumbers = new Array(byteCharacters.length);
-            for (var i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            var byteArray = new Uint8Array(byteNumbers);
 
-            var blob = new Blob([byteArray], {
-                // type: "application/vnd.ms-excel;charset=charset=utf-8"
-                // type: "Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            });
+function saveByteArray(fileName, b64Data) {
+    // http://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+    var byteCharacters = atob(b64Data);
+    var byteNumbers = new Array(byteCharacters.length);
+    for (var i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    var byteArray = new Uint8Array(byteNumbers);
 
-            saveAs(blob, fileName);
-        };
+    var blob = new Blob([byteArray], {
+        // type: "application/vnd.ms-excel;charset=charset=utf-8"
+        // type: "Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    });
+
+    saveAs(blob, fileName);
+};
 </script>
 <!-- InstanceEndEditable -->
 </head>
@@ -163,7 +161,7 @@ app.controller('testCtrl', ['$scope', 'Security', function ($scope, Security, $r
             <li class="menu-admin"><a href="amend-evaluation.html">Amend</a></li>
             <li class="menu-admin"><a href="delete-evaluation.html">Delete</a></li>
             <li role="separator" class="divider menu-admin"></li>
-            <li class="dropdown-header menu-admin">Evaluation Operation</li>
+            <li class="dropdown-header">Evaluation Operation</li>
             <li class="menu-admin"><a href="process-questionnaire-design.html">Questionnaire Design</a></li>
             <li class="menu-admin"><a href="process-gen-eva-proposal.html">Generate Evaluation Proposal</a></li>
             <li><a href="create-evaluation-entry.html">360 Degree Evaluation Entry</a></li>

@@ -6,7 +6,7 @@ $data 			= array(); 		// array to pass back data
 $responseArray = array();
 
 function ProcessData($requestData){
-    $processMessageList = ["Processed Message"];
+    $processMessageList = [];
 	$staffManager = new StaffManager();
     $evaProposalManager = new EvaProposalManager();
     $questionnaireManager = new QuestionnaireManager();
@@ -83,7 +83,6 @@ function ProcessData($requestData){
         }
     }
     
-    // require $evaProposalList, $questionList
     // if all questionnaire completed, calculate the marks
     if($isAllEvaProposalSubmitted){
     
@@ -106,18 +105,7 @@ function ProcessData($requestData){
         
         $staffQtnResultList[$staffID] = $qtnResultMarkList;
         
-        // get the questionnaire comment result
-//        $qtnResultCommentList = [];
-//        $supervisorCommentList = CalSupervisorComment($qtnCommentMark, $evaProposalList);
-//        $selfCommentList = CalSelfComment($qtnCommentMark, $evaProposalList);
-//        $collaboratorCommentList = CalCollaboratorComment($qtnCommentMark, $evaProposalList);
-        
-//        $qtnResultCommentList["Self"] = $selfCommentList;
-//        $qtnResultCommentList["Boss"] = $supervisorCommentList;
-//        $qtnResultCommentList["Collaborator"] = $collaboratorCommentList;
-        
         $objPHPExcel = ReadExcelTemplate();
-//        GenerateExcelReport($questionList, $qtnResultMarkList);
         $objPHPExcel = MergeEvaluationInfoReport($objPHPExcel, $evaluationCode);
         $objPHPExcel = MergeStaffInfoReport($objPHPExcel, $staffResponseArray);
         $objPHPExcel = MergeChartInExcelReport($objPHPExcel, $qtnRatingMark, $qtnResultMarkList);
@@ -154,27 +142,7 @@ function MergeEvaluationInfoReport($objPHPExcel, $evaluationCode){
     $evaluationDescription = $evaluationResponseArray["data"]["0"]["Description"];
     
     $evaluationCode = strtoupper($evaluationCode);
-    
-//    $excelArray = [];
-//    $excelRowArray = [strtoupper($evaluationCode)];
-//    array_push($excelArray, $excelRowArray);
-//    // set Evaluation Code to excel cells
-//    $objWorksheet->fromArray(
-//        $excelArray,
-//        NULL,
-//        'C2'
-//    );
-//    
-//    $excelArray = [];
-//    $excelRowArray = [$evaluationDescription];
-//    array_push($excelArray, $excelRowArray);
-//    // set Evaluation Description to excel cells
-//    $objWorksheet->fromArray(
-//        $excelArray,
-//        NULL,
-//        'C3'
-//    );
-    
+    // set evaluation code, description
     $objPHPExcel->getActiveSheet()->setCellValueExplicit('C2', $evaluationCode, PHPExcel_Cell_DataType::TYPE_STRING);
     $objPHPExcel->getActiveSheet()->setCellValueExplicit('C3', $evaluationDescription, PHPExcel_Cell_DataType::TYPE_STRING);
     
@@ -184,7 +152,6 @@ function MergeStaffInfoReport($objPHPExcel, $staffResponseArray){
 	$departmentManager = new DepartmentManager();
 	$positionManager = new PositionManager();
     
-//    $objWorksheet = $objPHPExcel->getActiveSheet();
     $objWorksheet = $objPHPExcel->setActiveSheetIndex(0);
     
     $staffID = $staffResponseArray["data"]["0"]["StaffID"];
@@ -266,9 +233,7 @@ function MergeChartInExcelReport($objPHPExcel, $questionList, $qtnResultList){
         $collaboratorMark = $qtnResultList["Collaborator"][$questionID]["Collaborator"];
         
         $excelRowArray = [];
-        // print question title
-//        array_push($excelRowArray, $questionTitle);
-        // print question number
+        // print data table for chart
         array_push($excelRowArray, "Q".($keyIndex+1));
         array_push($excelRowArray, $bossMark);
         array_push($excelRowArray, $selfMark);
@@ -342,8 +307,8 @@ function MergeChartInExcelReport($objPHPExcel, $questionList, $qtnResultList){
     $xAxisLabel = new PHPExcel_Chart_Title('Question');
     $yAxisLabel = new PHPExcel_Chart_Title('Rating');
     
+    //PHPExcel_Chart_Axis::setAxisOptionsProperties($axis_labels, $horizontal_crosses_value = NULL, $horizontal_crosses = NULL, $axis_orientation = NULL, $major_tmt = NULL, $minor_tmt = NULL, $minimum = NULL, $maximum = NULL, $major_unit = NULL, $minor_unit = NULL)
     $axis =  new PHPExcel_Chart_Axis();
-//    $axis->setAxisOptionsProperties('nextTo', null, null, null, 0, 5.5, 1, 0.1);
     $axis->setAxisOptionsProperties('nextTo', null, null, null, null, null, 0, 5.5, 1, 0.1);
 
     //	Create the chart
@@ -360,8 +325,6 @@ function MergeChartInExcelReport($objPHPExcel, $questionList, $qtnResultList){
     );
     
     //	Set the position where the chart should appear in the worksheet
-//    $chart->setTopLeftPosition('B20');
-//    $chart->setBottomRightPosition('J37');
     $chart->setTopLeftPosition('B25');
     $chart->setBottomRightPosition('M45');
 
@@ -384,33 +347,17 @@ function MergeQuestionMarksReport($objPHPExcel, $questionList, $qtnResultList){
 	foreach($questionList as $keyIndex => $qtnRecord) {
         $questionTitle = $qtnRecord["Question"];
         $questionID = $qtnRecord["QuestionID"];
-        $bossMark = $qtnResultList["Boss"][$questionID]["Boss"];
-        $selfMark = $qtnResultList["Self"][$questionID]["Self"];
-        $collaboratorMark = $qtnResultList["Collaborator"][$questionID]["Collaborator"];
-        $totalMark = $bossMark + $selfMark + $collaboratorMark;
-        $averageMark = 0;
-        if($totalMark>0)
-            $averageMark = $totalMark / 3;
         
         $excelRowArray = [];
         // print question number
         array_push($excelRowArray, "Q".($keyIndex+1));
         // print question title
         array_push($excelRowArray, $questionTitle);
-        
-//        array_push($excelRowArray, '');
-//        array_push($excelRowArray, '');
-//        array_push($excelRowArray, '');
-//        array_push($excelRowArray, '');
-//        array_push($excelRowArray, $bossMark);
-//        array_push($excelRowArray, $selfMark);
-//        array_push($excelRowArray, $collaboratorMark);
-//        array_push($excelRowArray, $averageMark);
-        
+                
         array_push($excelArray, $excelRowArray);
     }
     
-    // insert row for question table
+    // insert row fors question table
     $objPHPExcel->getActiveSheet()->insertNewRowBefore(59, $numOfQuestion);
     // merge cell for question title
     for($qtnIndex = 1; $qtnIndex <= $numOfQuestion; $qtnIndex++){
@@ -428,11 +375,13 @@ function MergeQuestionMarksReport($objPHPExcel, $questionList, $qtnResultList){
     
         
     // prepare the question marks array
-    $excelArray = [];
-    
+    $excelMarksArray = [];
+    $totalBossMarks = 0;
+    $totalSelfMarks = 0;
+    $totalCollaboratorMarks = 0;
+    $totalAverageMarks = 0;
 	foreach($questionList as $keyIndex => $qtnRecord) {
-        $questionTitle = $qtnRecord["Question"];
-        $questionID = $qtnRecord["QuestionID"];
+        
         $bossMark = $qtnResultList["Boss"][$questionID]["Boss"];
         $selfMark = $qtnResultList["Self"][$questionID]["Self"];
         $collaboratorMark = $qtnResultList["Collaborator"][$questionID]["Collaborator"];
@@ -443,17 +392,41 @@ function MergeQuestionMarksReport($objPHPExcel, $questionList, $qtnResultList){
         
         $excelRowArray = [];
         
+        $totalBossMarks += $bossMark;
+        $totalSelfMarks += $selfMark;
+        $totalCollaboratorMarks += $collaboratorMark;
+        $totalAverageMarks += $averageMark;
+        
         array_push($excelRowArray, $bossMark);
         array_push($excelRowArray, $selfMark);
         array_push($excelRowArray, $collaboratorMark);
         array_push($excelRowArray, $averageMark);
         
-        array_push($excelArray, $excelRowArray);
+        array_push($excelMarksArray, $excelRowArray);
     }
+    
+    // prepare total marks for boss, self, collaborator
+    $excelTotalRowArray = [];
+    array_push($excelTotalRowArray, $totalBossMarks);
+    array_push($excelTotalRowArray, $totalSelfMarks);
+    array_push($excelTotalRowArray, $totalCollaboratorMarks);
+    array_push($excelTotalRowArray, $totalAverageMarks);
+        
+    array_push($excelMarksArray, $excelTotalRowArray);
+    
+    // prepare total average marks for boss, self, collaborator
+    $excelAverageRowArray = [];
+    array_push($excelAverageRowArray, ($totalBossMarks / $numOfQuestion));
+    array_push($excelAverageRowArray, ($totalSelfMarks / $numOfQuestion));
+    array_push($excelAverageRowArray, ($totalCollaboratorMarks / $numOfQuestion));
+    array_push($excelAverageRowArray, ($totalAverageMarks / $numOfQuestion));
+        
+    array_push($excelMarksArray, $excelAverageRowArray);
+    
     
     // set array value to excel cells
     $objWorksheet->fromArray(
-        $excelArray,
+        $excelMarksArray,
         NULL,
         'J59'
     );
@@ -562,13 +535,10 @@ function getRowcount($text, $width=138) {
 
 function SaveAndDownload($objPHPExcel, &$processMessageList, $evaluationCode, $staffResponseArray){
     $exportedReportPath = "";
-    $excelFilePath = str_replace('.php', '.xlsx', __FILE__);
-    $pdfFilePath = str_replace('.php', '.pdf', __FILE__);
-    $encrptyPdfFilePath = str_replace('.php', 'pwd.pdf', __FILE__);
+//    $excelFilePath = str_replace('.php', '.xlsx', __FILE__);
+//    $pdfFilePath = str_replace('.php', '.pdf', __FILE__);
+//    $encrptyPdfFilePath = str_replace('.php', 'pwd.pdf', __FILE__);
     
-    // filename = thisFileName
-//    $info = pathinfo($excelFilePath);
-//    $fileBaseName = basename($excelFilePath,'.'.$info['extension']);
     $staffID = $staffResponseArray["data"]["0"]["StaffID"];
     $fileBaseName = $evaluationCode."_".$staffID;
     $fileBaseName = strtoupper($fileBaseName);
@@ -576,6 +546,7 @@ function SaveAndDownload($objPHPExcel, &$processMessageList, $evaluationCode, $s
 //    $filenamePost = $fileBaseName.".pdf";
     $excelFilePath = BASE_EXPORT.$fileBaseName.".xlsx";
     $pdfFilePath = BASE_EXPORT.$fileBaseName.".pdf";
+    $pdfWithMetaFilePath = BASE_EXPORT.$fileBaseName."meta.pdf";
     $encrptyPdfFilePath = BASE_EXPORT.$fileBaseName."pwd.pdf";
     
     $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
@@ -607,23 +578,44 @@ function SaveAndDownload($objPHPExcel, &$processMessageList, $evaluationCode, $s
     
     // convert the excel to pdf file
     if(file_exists($officeToPDFPath)){
-    //    chdir(__DIR__);
-    //    $cmdOutput = shell_exec("OfficeToPDF.exe /hidden /readonly er01ir.xlsx");
-        chdir(BASE_3RD."PDF engine/");
-        $cmdOutput = shell_exec("OfficeToPDF.exe /hidden /readonly /excel_active_sheet ".$excelFilePath." ".$pdfFilePath);
-//        array_push($processMessageList, "OfficeToPDF.exe /hidden /readonly ".$excelFilePath." ".$pdfFilePath);
-        array_push($processMessageList, "Report was converted as PDF format.");
-            $exportedReportPath = $pdfFilePath;
+    	if(file_exists($excelFilePath)){
+	    //    chdir(__DIR__);
+	    //    $cmdOutput = shell_exec("OfficeToPDF.exe /hidden /readonly er01ir.xlsx");
+	        chdir(BASE_3RD."PDF engine/");
+	        $cmdOutput = shell_exec("OfficeToPDF.exe /hidden /readonly /excel_active_sheet ".$excelFilePath." ".$pdfFilePath);
+	//        array_push($processMessageList, "OfficeToPDF.exe /hidden /readonly ".$excelFilePath." ".$pdfFilePath);
+	        array_push($processMessageList, "Report was converted as PDF format.");
+	            $exportedReportPath = $pdfFilePath;
+        }else{
+        	array_push($processMessageList, "Excel was not found, cannot convert to pdf file. $excelFilePath");
+        }
     }
     
-    // encrpty the pdf
     if(file_exists($officeToPDFPath)){
         if(file_exists($cpdfPath)){
-            chdir(BASE_3RD."PDF engine/");
-            $cmdOutput = shell_exec("cpdf.exe -encrypt AES256ISO \"360Evaluation\" \"\" -no-edit ".$pdfFilePath." -o ".$encrptyPdfFilePath);
-//            array_push($processMessageList, "cpdf.exe -encrypt AES256ISO \"360Evaluation\" \"\" -no-edit ".$pdfFilePath." -o ".$encrptyPdfFilePath);
-            array_push($processMessageList, "PDF report was encrptyed.");
-            $exportedReportPath = $encrptyPdfFilePath;
+            // set meta data
+	    	if(file_exists($pdfFilePath)){
+	            chdir(BASE_3RD."PDF engine/");
+	            $cmdOutput = shell_exec("cpdf.exe -set-subject \"$evaluationCode\" $pdfFilePath -o ".$pdfWithMetaFilePath);
+                
+	            array_push($processMessageList, "PDF document information and metadata created.");
+	            $exportedReportPath = $pdfWithMetaFilePath;
+	        }
+	        else{
+	        	array_push($processMessageList, "PDF file was not found, cannot add document information and metadata. $pdfFilePath");
+	        }
+            
+            // encrpty the pdf
+	    	if(file_exists($pdfWithMetaFilePath)){
+	            chdir(BASE_3RD."PDF engine/");
+	            $cmdOutput = shell_exec("cpdf.exe -encrypt AES256ISO \"360Evaluation\" \"\" -no-edit ".$pdfWithMetaFilePath." -o ".$encrptyPdfFilePath);
+	//            array_push($processMessageList, "cpdf.exe -encrypt AES256ISO \"360Evaluation\" \"\" -no-edit ".$pdfFilePath." -o ".$encrptyPdfFilePath);
+	            array_push($processMessageList, "PDF report was encrptyed.");
+	            $exportedReportPath = $encrptyPdfFilePath;
+	        }
+	        else{
+	        	array_push($processMessageList, "PDF file was not found, cannot encrpty the file. $pdfWithMetaFilePath");
+	        }
         }
     }
     
@@ -659,42 +651,41 @@ function ConvertPDFtoByteArray($exportedReportPath, &$processMessageList, $evalu
     return $responseArray;
 }
 
-	function GetFileAsByteArray($filename){
-		// $byteArray = unpack("N*", file_get_contents($filename));
-		$handle = fopen($filename, "rb");
-		$fsize = filesize($filename);
-		$contents = fread($handle, $fsize);
+function GetFileAsByteArray($filename){
+    // $byteArray = unpack("N*", file_get_contents($filename));
+    $handle = fopen($filename, "rb");
+    $fsize = filesize($filename);
+    $contents = fread($handle, $fsize);
 
-		// 20160927, keithpoon, i don't kown why the array index start from 1
-		$byteArray = unpack("N*",$contents);
-		$newByteArray = array();
+    // 20160927, keithpoon, i don't kown why the array index start from 1
+    $byteArray = unpack("N*",$contents);
+    $newByteArray = array();
 
-		$arrayIndex = 0;
-		foreach ($byteArray as $key => $value){
-			$newByteArray[$arrayIndex] = $value;
-			$arrayIndex++;
-		}
-		
-		return $newByteArray;
-	}
+    $arrayIndex = 0;
+    foreach ($byteArray as $key => $value){
+        $newByteArray[$arrayIndex] = $value;
+        $arrayIndex++;
+    }
 
-	function GetFileAsString($filename){
-		// $byteArray = unpack("N*", file_get_contents($filename));
-		$handle = fopen($filename, "rb");
-		$fsize = filesize($filename);
-		$contents = fread($handle, $fsize);
-		$byteArray = unpack("N*",$contents);
+    return $newByteArray;
+}
 
-		$string = "";
-		foreach ($byteArray as $key => $value)
-		{ 
-			$string = $string.$value;
-		    //echo $byteArray[$n];
-		}
-		
-		return $string;
-	}
+function GetFileAsString($filename){
+    // $byteArray = unpack("N*", file_get_contents($filename));
+    $handle = fopen($filename, "rb");
+    $fsize = filesize($filename);
+    $contents = fread($handle, $fsize);
+    $byteArray = unpack("N*",$contents);
 
+    $string = "";
+    foreach ($byteArray as $key => $value)
+    { 
+        $string = $string.$value;
+        //echo $byteArray[$n];
+    }
+
+    return $string;
+}
 
 function GenerateExcelReport($questionList, $qtnResultList){
     $objPHPExcel = new PHPExcel();

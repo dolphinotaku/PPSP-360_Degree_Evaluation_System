@@ -81,8 +81,6 @@ app.controller('imExStaffController', ['$scope', 'Security', function ($scope, S
 	
 	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried ValidateBuffer()");
-		
-		//controller.ngModel.DepartmentCode = "ABC"
 
         return true;
 	}
@@ -132,7 +130,7 @@ app.controller('imExStaffController', ['$scope', 'Security', function ($scope, S
             <li class="menu-admin"><a href="amend-evaluation.html">Amend</a></li>
             <li class="menu-admin"><a href="delete-evaluation.html">Delete</a></li>
             <li role="separator" class="divider menu-admin"></li>
-            <li class="dropdown-header menu-admin">Evaluation Operation</li>
+            <li class="dropdown-header">Evaluation Operation</li>
             <li class="menu-admin"><a href="process-questionnaire-design.html">Questionnaire Design</a></li>
             <li class="menu-admin"><a href="process-gen-eva-proposal.html">Generate Evaluation Proposal</a></li>
             <li><a href="create-evaluation-entry.html">360 Degree Evaluation Entry</a></li>

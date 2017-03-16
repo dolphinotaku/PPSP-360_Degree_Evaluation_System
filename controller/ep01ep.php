@@ -12,7 +12,10 @@ function ProcessData($requestData){
     
 	$createRows = new stdClass();
     
-    $isClearAll = $requestData->Data->IsClearAll;
+    if(isset($requestData->Data->IsClearAll))
+        $isClearAll = $requestData->Data->IsClearAll;
+    else
+        $isClearAll = false;
     $evaluationCode = $requestData->Data->evaluationCode->EvaluationCode;
     $deptRange = $requestData->Data->deptRange;
     
@@ -24,13 +27,17 @@ function ProcessData($requestData){
     $selectionRange = new stdClass();
     $selectionRange->DepartmentCode = $deptRange;
     
-    // get the valid staff in list
-    $responseArray = $staffManager->selectRange($field, $selectionRange);
+    if($deptRange->start != "" && $deptRange->end != "")
+        // get the valid staff in list
+        $responseArray = $staffManager->selectRange($field, $selectionRange);
+    else
+        $responseArray = $staffManager->select();
     
     // Prepare evaluation proposal records
     $evaProposalRecord = $evaProposalManager->_;
     $evaProposalList = [];
     $staffList = $responseArray["data"];
+    
 	foreach ($staffList as $keyIndex => $rowItem) {
         
         $evaProposalRecordOfStaff = [];
@@ -77,17 +84,17 @@ function ProcessData($requestData){
             $rowItem["EvaluationCode"] = $evaluationCode;
             $evaProposalManager->Initialize();
             
+            // set default status as incomplete
             $evaProposalManager->_ = $rowItem;
-            $evaProposalManager->Status = "I";
+            $evaProposalManager->EvaProQtnStatusCode = "I";
             
             // Check key exists
             $isKeyExists = $evaProposalManager->CheckDuplicateEvaluateeor();
-            // Delete if exists
-            if($isKeyExists)
-                $responseArray = $evaProposalManager->delete();
             
-            // insert record
-            $responseArray = $evaProposalManager->insert();
+            
+            // insert record if not exists
+            if(!$isKeyExists)
+                $responseArray = $evaProposalManager->insert();
             
 			if($responseArray['affected_rows'] > 0){
                 if($isKeyExists)

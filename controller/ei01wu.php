@@ -20,25 +20,11 @@ function FindData($requestData){
 	$securityManager = new SecurityManager();
     $loginData = $securityManager->GetLoginData();
     $userID = $loginData["USER_ID"];
-    
-	/*
-	$offsetRecords = 0;
-	$offsetRecords = $requestData->Offset;
-	$pageNum = $requestData->PageNum;
-    
-    $webuserManager->UserID = $userID;
-    
-	$responseArray = $webuserManager->select();
-	*/
-	
-	//print_r($loginData);
 	
 	$responseArray = Core::CreateResponseArray();
 	$responseArray["data"][0] = $loginData;
-        $responseArray['access_status'] = Core::$access_status['OK'];
+    $responseArray['access_status'] = Core::$access_status['OK'];
 	
-	//print_r($responseArray);
-    
 	return $responseArray;
 }
 
