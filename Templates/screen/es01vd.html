@@ -3,8 +3,7 @@
 	  <thead>
 		<tr>
 			<th>Vendor ID</th>
-<!-- 			<th>User ID</th> -->
-			<th>Name</th>
+			<th>Organization Name</th>
 			<th>Contact Person</th>
 			<th>Phone</th>
 			<th>Email</th>
@@ -15,7 +14,6 @@
 		ng-click="PointedToRecord(row, $event, this)"
 		ng-dblclick="SelectedToRecord(row, $event, this)">
 		  <td>{{row.VendorID | uppercase}}</td>
-<!-- 		  <td>{{row.UserID}}</td> -->
 		  <td>{{row.Name}}</td>
 		  <td>{{row.ContactPerson}}</td>
 		  <td>{{row.Phone}}</td>
