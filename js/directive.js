@@ -63,7 +63,8 @@ app.directive('pageview', ['$rootScope',
             var isPageRecordsLimit = false;
             var pageRecordsLimit = $attrs.pageRecordsLimit;
             if(typeof(pageRecordsLimit) != undefined){
-            	if(pageRecordsLimit != null && pageRecordsLimit !=""){
+            	if((pageRecordsLimit != null && pageRecordsLimit !="") || !isNaN(pageRecordsLimit)){
+                    pageRecordsLimit = parseInt(pageRecordsLimit);
             		isPageRecordsLimit = true;
             	}
             }
@@ -353,7 +354,7 @@ app.directive('pageview', ['$rootScope',
     		var recordNumberStart = (pageNum - 1) * numOfRecordPerPage;
     		var recordNumberEnd = pageNum * numOfRecordPerPage - 1;
     		var isAllRecordsExists = true;
-
+            console.log(recordNumberStart, recordNumberEnd)
             if(typeof(clearNRefresh) == "undefined"){
                 clearNRefresh = false;
             }
@@ -431,6 +432,7 @@ app.directive('pageview', ['$rootScope',
         	var clientID = Security.GetSessionID();
         	var programId = $scope.programId.toLowerCase();
             var pageNum = $scope.pageNum;
+            var numOfRecordPerPage = $scope.numOfRecordPerPage;
             var recordOffset = (pageNum-1) * $scope.numOfRecordPerPage;
 
             // $scope.DisplayMessage = "";
@@ -448,6 +450,7 @@ app.directive('pageview', ['$rootScope',
 				"Session": clientID,
 				"Table": programId,
                 "PageNum": pageNum,
+                "PageRecordsLimit": numOfRecordPerPage,
 				"Offset": recordOffset,
 				criteria: criteriaObj
 			};
