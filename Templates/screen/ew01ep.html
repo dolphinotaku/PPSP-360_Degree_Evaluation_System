@@ -1,0 +1,34 @@
+<div class="table-responsive">
+	<table class="table table-condensed table-hover">
+	  <thead>
+		<tr>
+			<th>Proposal ID</th>
+			<th>Evaluatee</th>
+			<th>Evaluator</th>
+			<th>Evaluation Code</th>
+			<th>Evaluator Type</th>
+			<th>Status</th>
+		</tr>
+	  </thead>
+	  <tbody>
+		<tr ng-repeat="evaProRow in pageviewCtrl.ngModel" 
+		ng-click="PointedToRecord(evaProRow, $event, this)"
+		ng-dblclick="SelectedToRecord(evaProRow, $event, this)">
+		  <td>{{evaProRow.EvaProposalID}}</td>
+		  <td>{{evaProRow.Evaluatee}}</td>
+		  <td>{{evaProRow.Evaluator}}</td>
+		  <td>{{evaProRow.EvaluationCode}}</td>
+		  <td>
+			<div ng-if="evaProRow.EvaTypeCode == 'B'">Supervisor</div>
+			<div ng-if="evaProRow.EvaTypeCode == 'S'">Self</div>
+			<div ng-if="evaProRow.EvaTypeCode == 'C'">Collaborator</div>
+		  </td>
+		  <td>
+			<div ng-if="evaProRow.EvaProQtnStatusCode == 'S'">Submitted</div>
+			<div ng-if="evaProRow.EvaProQtnStatusCode == 'I'">Incomplete</div>
+			<div ng-if="evaProRow.EvaProQtnStatusCode == 'D'">Drafted</div>
+		  </td>
+		</tr>
+	  </tbody>
+	</table>
+</div>
