@@ -76,6 +76,9 @@ app.controller('amendVendorController', ['$scope', 'Security', function ($scope,
 	
 	$scope.SetDefaultValue = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried SetDefaultValue()");
+        
+		if(fieldName == "VendorID")
+			newObj.VendorID = newObj.VendorID.toUpperCase();
 	}
 	
 	$scope.StatusChange = function(fieldName, newValue, newObj, scope, iElement, iAttrs, controller){
@@ -241,7 +244,7 @@ app.controller('amendVendorController', ['$scope', 'Security', function ($scope,
             </label>
           </div> -->
           <div class="form-group">
-            <label>Name
+            <label>Organization Name
             	<input type="text" class="form-control" ng-model="amendForm.Name">
             </label>
           </div>

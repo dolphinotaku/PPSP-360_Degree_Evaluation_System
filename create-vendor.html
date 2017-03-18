@@ -84,13 +84,14 @@ app.controller('createVendorController', ['$scope', 'Security', function ($scope
 		console.log("<"+iElement[0].tagName+">" +" Directive overried StatusChange()");
 //		console.log(fieldName);
 //		console.log(newValue);
-
+		
+		if(fieldName == "VendorID")
+			newObj.VendorID = newObj.VendorID.toUpperCase();
 	}
 	
 	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried ValidateBuffer()");
 		
-
         return true;
 	}
 
@@ -243,7 +244,7 @@ app.controller('createVendorController', ['$scope', 'Security', function ($scope
           </div> -->
 
           <div class="form-group">
-            <label>Name
+            <label>Organization Name
             	<input type="text" class="form-control" ng-model="entryForm.Name">
             </label>
           </div>
