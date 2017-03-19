@@ -2,7 +2,7 @@
 
 function ProcessData($requestData){
     $responseArray = array();
-    $processMessageList = ["Processed Message"];
+    $processMessageList = ["Processed Result:"];
     $evaluationManager = new EvaluationManager();
     $questionManager = new QuestionManager();
     $questionnaireManager = new QuestionnaireManager();

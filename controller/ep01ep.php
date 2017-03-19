@@ -6,7 +6,7 @@ $data 			= array(); 		// array to pass back data
 $responseArray = array();
 
 function ProcessData($requestData){
-    $processMessageList = ["Processed Message"];
+    $processMessageList = ["Processed Result:"];
 	$staffManager = new StaffManager();
     $evaProposalManager = new EvaProposalManager();
     

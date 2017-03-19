@@ -81,7 +81,7 @@ app.controller('amendDepartmentController', ['$scope', 'Security', function ($sc
 		console.log("<"+iElement[0].tagName+">" +" Directive overried StatusChange()");
 		
 		if(fieldName == "DepartmentCode")
-			newObj.DepartmentCode = newObj.DepartmentCode.toUpperCase(); 
+			newObj.DepartmentCode = newObj.DepartmentCode.toUpperCase();
 	}
 	
 	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){

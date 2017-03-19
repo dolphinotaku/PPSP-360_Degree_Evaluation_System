@@ -211,16 +211,16 @@ app.controller('amendDepartmentController', ['$scope', 'Security', function ($sc
 <div class="container">
 <!-- InstanceBeginEditable name="intro" -->
 <div ng-controller="amendDepartmentController as amendDeptCtrl" style="max-width: 750px;">
-        <div class="panel panel-default">
-          <div class="panel-heading">Process Message</div>
-          <div class="panel-body">
-            <message ng-model="processMsg" auto-close>
-              <div class="well well-sm" ng-if="msgCtrl.ngModel.length > 0">
-                <div ng-repeat="dspMsg in msgCtrl.ngModel track by $index" ng-bind="dspMsg"></div>
-              </div>
-            </message>
+    <div class="panel panel-default">
+      <div class="panel-heading">Process Message</div>
+      <div class="panel-body">
+        <message ng-model="processMsg" auto-close>
+          <div class="well well-sm" ng-if="msgCtrl.ngModel.length > 0">
+            <div ng-repeat="dspMsg in msgCtrl.ngModel track by $index" ng-bind="dspMsg"></div>
           </div>
-        </div>
+        </message>
+      </div>
+    </div>
 	<h3>View Evaluation Proposal</h3>
     <pageview ng-model="deptDataList" program-id="ew01ep" page-records-limit="20">
         <screen></screen>

@@ -3,7 +3,7 @@
 function ProcessData($requestData){
     $responseArray = Core::CreateResponseArray();
     
-    $processMessageList = ["Processed Message"];
+    $processMessageList = ["Processed Result:"];
     $evaluationManager = new EvaluationManager();
     $questionManager = new QuestionManager();
     $questionnaireManager = new QuestionnaireManager();

@@ -2,7 +2,7 @@
 
 function ProcessData($requestData){
     $responseArray = Core::CreateResponseArray();
-    $processMessageList = ["Processed Message"];
+    $processMessageList = ["Processed Result:"];
     
     $evaProposalManager = new EvaProposalManager();
     $userID = $loginData["USER_ID"];
