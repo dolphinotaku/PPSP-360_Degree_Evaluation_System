@@ -97,6 +97,83 @@ app.run(function ($rootScope, $log, Security) {
 	//Security.GoToMenuIfSessionExists();
 	Security.RequiresAuthorization();
 });
+    
+app.controller('summaryCtrl', ['$scope', '$rootScope', 'Security', 'MessageService', function ($scope, $rootScope, Security, MessageService) {
+	$scope.directiveScopeDict = {};
+	$scope.directiveCtrlDict = {};
+    
+    $scope.qtnnaireModel = {};
+    $scope.qtnnaireModel.questionnaireTable = [];
+    
+    $scope.qtnnaireModel.ratingMarksQtnList = [];
+    $scope.qtnnaireModel.openEndQtnList = [];
+    
+    $scope.questionTable = [];
+    $scope.evaluationTable = [];
+    $scope.questionResultTable = [];
+    
+    $scope.selectedEvaProposal = [];
+    
+	function Initialize(){
+		var entryForm = {};
+		
+		$scope.entryForm = entryForm;
+	}
+	Initialize();
+	
+	$scope.EventListener = function(scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried EventListener()");
+        var tagName = iElement[0].tagName.toLowerCase();
+		var prgmID = scope.programId;
+        var scopeID = scope.$id;
+        var hashID = tagName + '_' + prgmID;
+        
+		if($scope.directiveScopeDict[hashID] == null || typeof($scope.directiveScopeDict[hashID]) == "undefined"){
+            $scope.directiveScopeDict[hashID] = scope;
+            $scope.directiveCtrlDict[hashID] = controller;
+		}
+		
+		//http://api.jquery.com/Types/#Event
+		//The standard events in the Document Object Model are:
+		// blur, focus, load, resize, scroll, unload, beforeunload,
+		// click, dblclick, mousedown, mouseup, mousemove, mouseover, mouseout, mouseenter, mouseleave,
+		// change, select, submit, keydown, keypress, and keyup.
+		iElement.ready(function() {
+			
+		})
+        
+        if(prgmID == "ei01mp"){
+//            $scope.directiveScopeDict[hashID].SubmitData();
+        }
+	}
+	
+	$scope.SetDefaultValue = function(scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried SetDefaultValue()");
+	}
+	
+	$scope.StatusChange = function(fieldName, newValue, newObj, scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried StatusChange()");
+	}
+	
+	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried ValidateBuffer()");
+        return true;
+	}
+
+    $scope.CustomSelectedToRecord = function(sRecord, rowScope, scope, iElement, controller){
+        console.log("<"+iElement[0].tagName+">" +" Directive overried CustomPointedToRecord()");
+        $scope.amendForm = sRecord;
+        $scope.deleteForm = sRecord;
+        
+		var prgmID = scope.programId;
+        
+    }
+
+    $scope.CustomGetDataResult = function(responseObj, httpStatusCode, scope, element, attrs, ctrl){
+        $(".panel-footer").hide();
+    }
+    
+}]);
 </script>
 <!-- InstanceEndEditable -->
 </head>
@@ -206,72 +283,55 @@ app.run(function ($rootScope, $log, Security) {
 <div ng-controller="mainCtrl">
 	<process ng-model="processModel" program-id="ei01wu"></process>
 </div>
+<div ng-controller="summaryCtrl">
+    <process ng-model="evaProProcessModel" program-id="ei01mp">
+        <form ng-submit="SubmitData()">
+            <fieldset>
+              <legend>Incomplete Evaluation Questionnaire</legend>
+                <pageview ng-model="summaryModel" program-id="ei01mp">
+                    <screen program-id="ei01ep"></screen>
+                </pageview>
 <!--
-<div class="row">
-    <div class="col-md-3 col-sm-4 col-xs-6">
-      <a class="btn btn-default menu-btn" href="create-sensei.html" role="button">
-          <img class="img-responsive img-rounded" src="images/btn/applications.png">
-          <h5 class="hidden-xs">Staff Profile</h5>
-      </a>
-    </div>
-    <div class="col-md-3 col-sm-4 col-xs-6">
-      <a class="btn btn-default menu-btn" href="view-sensei.html" role="button">
-          <img class="img-responsive img-rounded" src="images/btn/applications.png">
-          <h5 class="hidden-xs">Vendor Master</h5>
-      </a>
-    </div>
-    <div class="col-md-3 col-sm-4 col-xs-6">
-      <a class="btn btn-default menu-btn" href="update-sensei.html" role="button">
-          <img class="img-responsive img-rounded" src="images/btn/applications.png">
-          <h5 class="hidden-xs">Department Master</h5>
-      </a>
-    </div>
-    <div class="col-md-3 col-sm-4 col-xs-6">
-      <a class="btn btn-default menu-btn" href="delete-sensei.html" role="button">
-          <img class="img-responsive img-rounded" src="images/btn/applications.png">
-          <h5 class="hidden-xs">Staff Grade Master</h5>
-      </a>
-    </div>
-    <div class="col-md-3 col-sm-4 col-xs-6">
-      <a class="btn btn-default menu-btn" href="delete-sensei.html" role="button">
-          <img class="img-responsive img-rounded" src="images/btn/applications.png">
-          <h5 class="hidden-xs">Position Master</h5>
-      </a>
-    </div>
-    <hr>
-    <div class="col-md-3 col-sm-4 col-xs-6">
-      <a class="btn btn-default menu-btn" href="create-card.html" role="button">
-          <img class="img-responsive img-rounded" src="images/Hunterxhunter_inforeview_75retro.png">
-          <h5 class="hidden-xs">Create</h5>
-      </a>
-  </div>
-    <div class="col-md-3 col-sm-4 col-xs-6">
-      <a class="btn btn-default menu-btn" href="view-card.html" role="button">
-      <img class="img-responsive img-rounded" src="images/card-book.png">
-          <h5 class="hidden-xs">Book</h5>
-      </a>
-    </div>
-    <div class="col-md-3 col-sm-4 col-xs-6">
-      <a class="btn btn-default menu-btn" href="#" role="button">
-      <img class="img-responsive img-rounded" src="images/Hunterxhunter_inforeview_75retro.png">
-          <h5 class="hidden-xs">Amend</h5>
-      </a>
-    </div>
-    <div class="col-md-3 col-sm-4 col-xs-6">
-      <a class="btn btn-default menu-btn" href="delete-sensei.html" role="button">
-      <img class="img-responsive img-rounded" src="images/Hunterxhunter_inforeview_75retro.png">
-          <h5 class="hidden-xs">Delete</h5>
-      </a>
-    </div>
-    <div class="col-md-3 col-sm-4 col-xs-6">
-      <a class="btn btn-default menu-btn" href="import-export-card.html" role="button">
-          <img class="img-responsive img-rounded" src="images/card-back.png">
-          <h5 class="hidden-xs">Import / Export</h5>
-      </a>
-    </div>
-</div>
-<hr>
+                <div class="table-responsive">
+                    <table class="table table-condensed table-hover">
+                      <thead>
+                        <tr>
+                            <th>Proposal ID</th>
+                            <th>Evaluatee</th>
+                            <th>Evaluator</th>
+                            <th>Evaluation Code</th>
+                            <th>Evaluator Type</th>
+                            <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-repeat="evaProRow in pageviewCtrl.ngModel" 
+                        ng-click="PointedToRecord(evaProRow, $event, this)"
+                        ng-dblclick="SelectedToRecord(evaProRow, $event, this)"
+                        ng-if="evaProRow.EvaProQtnStatusCode != 'S'">
+                          <td>{{evaProRow.EvaProposalID}}</td>
+                          <td>{{evaProRow.Evaluatee}}</td>
+                          <td>{{evaProRow.Evaluator}}</td>
+                          <td>{{evaProRow.EvaluationCode}}</td>
+                          <td>
+                            <div ng-if="evaProRow.EvaTypeCode == 'B'">Supervisor</div>
+                            <div ng-if="evaProRow.EvaTypeCode == 'S'">Self</div>
+                            <div ng-if="evaProRow.EvaTypeCode == 'C'">Collaborator</div>
+                          </td>
+                          <td>
+                            <div ng-if="evaProRow.EvaProQtnStatusCode == 'S'">Submitted</div>
+                            <div ng-if="evaProRow.EvaProQtnStatusCode == 'I'">Incomplete</div>
+                            <div ng-if="evaProRow.EvaProQtnStatusCode == 'D'">Drafted</div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                </div>
 -->
+            </fieldset>
+        </form>
+    </process>
+</div>
 <!-- InstanceEndEditable -->
 </div>
 <div class="container" id="content"> <!-- InstanceBeginEditable name="content" -->
