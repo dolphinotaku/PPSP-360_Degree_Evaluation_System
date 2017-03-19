@@ -88,10 +88,6 @@ app.controller('testCtrl', ['$scope', '$rootScope', 'Security', 'MessageService'
 		iElement.ready(function() {
 			
 		})
-        
-        if(prgmID == "ei01ep"){
-            console.dir(scope)
-        }
 	}
 	
 	$scope.SetDefaultValue = function(scope, iElement, iAttrs, controller){
@@ -294,6 +290,7 @@ app.controller('testCtrl', ['$scope', '$rootScope', 'Security', 'MessageService'
             <li class="dropdown-header">Evaluation Operation</li>
             <li class="menu-admin"><a href="process-questionnaire-design.html">Questionnaire Design</a></li>
             <li class="menu-admin"><a href="process-gen-eva-proposal.html">Generate Evaluation Proposal</a></li>
+            <li class="menu-admin"><a href="evaluation-proposal-entry.html">View Evaluation Proposal</a></li>
             <li><a href="create-evaluation-entry.html">360 Degree Evaluation Entry</a></li>
             <li role="separator" class="divider"></li>
             <li class="dropdown-header">Report</li>
