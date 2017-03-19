@@ -210,25 +210,28 @@ try{
 		case 'CreateData':
 			$sqlResultData['ActionResult'] = call_user_func_array($funcName, array($requestData));
 			if($sqlResultData['ActionResult']['access_status'] == "OK"){
-				$sqlResultData['Message'] = "Data created.";
+				$sqlResultData['Message'] = "Data has been successfully created.";
 			}else{
-				$sqlResultData['Message'] = "Data create fail.";
+//				$sqlResultData['Message'] = "Data create failure.";
+                $sqlResultData['Message'] = $sqlResultData['ActionResult']['error'];
 			}
 			break;
 		case 'UpdateData':
 			$sqlResultData['ActionResult'] = call_user_func_array($funcName, array($requestData));
 			if($sqlResultData['ActionResult']['access_status'] == "OK"){
-				$sqlResultData['Message'] = "Data updated.";
+				$sqlResultData['Message'] = "Data has been successfully updated.";
 			}else{
-				$sqlResultData['Message'] = "Data update fail.";
+//				$sqlResultData['Message'] = "Data update failure.";
+                $sqlResultData['Message'] = $sqlResultData['ActionResult']['error'];
 			}
 			break;
 		case 'DeleteData':
 			$sqlResultData['ActionResult'] = call_user_func_array($funcName, array($requestData));
 			if($sqlResultData['ActionResult']['access_status'] == "OK"){
-				$sqlResultData['Message'] = "Data deleted.";
+				$sqlResultData['Message'] = "Data has been successfully deleted.";
 			}else{
-				$sqlResultData['Message'] = "Data delete fail.";
+//				$sqlResultData['Message'] = "Data delete failure.";   
+                $sqlResultData['Message'] = $sqlResultData['ActionResult']['error'];
 			}
 			break;
 		case 'ImportData':
