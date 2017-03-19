@@ -82,7 +82,7 @@ function ProcessData($requestData){
 		$responseArray = $questionManager->insert();
 	}
     
-    array_push($processMessageList, "Questionnarie updated.");
+    array_push($processMessageList, "Questionnaire updated.");
     
     $responseArray = Core::CreateResponseArray();
     $responseArray['affected_rows'] = (sizeof($ratingMarksQtnList) + sizeof($openEndQtnList));

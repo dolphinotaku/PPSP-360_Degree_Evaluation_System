@@ -2,13 +2,18 @@
 
 function ProcessData($requestData){
     $responseArray = Core::CreateResponseArray();
-    
-    $processMessageList = ["Processed Result:"];
+    $processMessageList = [];
     $evaluationManager = new EvaluationManager();
     $questionManager = new QuestionManager();
     $questionnaireManager = new QuestionnaireManager();
     
-    $evaluationCode = $requestData->Data->evaluationCode->EvaluationCode;
+    if(isset($requestData->Data->evaluationCode->EvaluationCode)){
+        $evaluationCode = $requestData->Data->evaluationCode->EvaluationCode;
+    }else{
+        array_push($processMessageList, "Evaluation Code required.");
+        $responseArray['processed_message'] = $processMessageList;
+        return $responseArray;
+    }
     
     $evaluationManager->EvaluationCode = $evaluationCode;
     $evaluationResponseArray = $evaluationManager->select();
