@@ -1,0 +1,479 @@
+<!doctype html>
+<html><!-- InstanceBegin template="/Templates/basic-bootstrap.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>360 Evaluation | 360 Degree Evaluation Entry</title>
+<!-- InstanceEndEditable -->
+<link rel="icon" type="image/png" href="images/logo48.png" />
+<link rel="stylesheet" type="text/css" href="css/body.css">
+<link rel="stylesheet" type="text/css" href="css/chrome.css">
+<link rel="stylesheet" type="text/css" href="third-party/bootstrap/bootstrap-3.3.6-dist/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="third-party/font-awesome/font-awesome-4.5.0/css/font-awesome.min.css">
+<script type="text/javascript" src="third-party/jQuery/jquery-2.2.1.min.js"></script>
+<script type="text/javascript" src="third-party/jQuery/jquery.cookie-1.4.1.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular-animate.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular-route.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular-touch.min.js"></script>
+<script type="text/javascript" src="third-party/angularjs/angular-1.5.0/angular-cookies.min.js"></script>
+<script type="text/javascript" src="third-party/bootstrap/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+<script type="text/javascript" src="js/config.js"></script>
+<script type="text/javascript" src="js/directive.js"></script>
+<script type="text/javascript" src="js/service.js"></script>
+<script type="text/javascript" src="third-party/angularjs-ui/UI-Bootstrap/ui-bootstrap-tpls-1.3.2.js"></script>
+<script type="text/javascript" src="third-party/Blob.js-master/Blob.js"></script>
+<script type="text/javascript" src="third-party/FileSaver.js/FileSaver.js-1.3.2/FileSaver.min.js"></script>
+<script src="third-party/ng-file-upload-12.2.12/demo/src/main/webapp/js/ng-file-upload-shim.js"></script>
+<script src="third-party/ng-file-upload-12.2.12/demo/src/main/webapp/js/ng-file-upload.js"></script>
+<!-- InstanceBeginEditable name="head" -->
+<script src="js/menu.js"></script>
+<script>
+// jQuery
+$(function() {
+	
+});
+</script>
+<script>
+"use strict";
+app.run(function ($rootScope, $log, Security) {
+	console.log("app.run at local page");
+	//Security.GoToMenuIfSessionExists();
+	Security.RequiresAuthorization();
+});
+
+app.controller('testCtrl', ['$scope', '$rootScope', 'Security', 'MessageService', function ($scope, $rootScope, Security, MessageService) {
+	$scope.directiveScopeDict = {};
+	$scope.directiveCtrlDict = {};
+    
+    $scope.qtnnaireModel = {};
+    $scope.qtnnaireModel.questionnaireTable = [];
+    
+    $scope.qtnnaireModel.ratingMarksQtnList = [];
+    $scope.qtnnaireModel.openEndQtnList = [];
+    
+    $scope.questionTable = [];
+    $scope.evaluationTable = [];
+    $scope.questionResultTable = [];
+    
+    $scope.selectedEvaProposal = [];
+    
+	function Initialize(){
+		var entryForm = {};
+		
+		$scope.entryForm = entryForm;
+	}
+	Initialize();
+                $("#questionnaireProcess").hide();
+	
+	$scope.EventListener = function(scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried EventListener()");
+        var tagName = iElement[0].tagName.toLowerCase();
+		var prgmID = scope.programId;
+        var scopeID = scope.$id;
+        var hashID = tagName + '_' + prgmID;
+        
+		if($scope.directiveScopeDict[hashID] == null || typeof($scope.directiveScopeDict[hashID]) == "undefined"){
+            $scope.directiveScopeDict[hashID] = scope;
+            $scope.directiveCtrlDict[hashID] = controller;
+		}
+		
+		//http://api.jquery.com/Types/#Event
+		//The standard events in the Document Object Model are:
+		// blur, focus, load, resize, scroll, unload, beforeunload,
+		// click, dblclick, mousedown, mouseup, mousemove, mouseover, mouseout, mouseenter, mouseleave,
+		// change, select, submit, keydown, keypress, and keyup.
+		iElement.ready(function() {
+			
+		})
+        
+        if(prgmID == "ei01ep"){
+            console.dir(scope)
+        }
+	}
+	
+	$scope.SetDefaultValue = function(scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried SetDefaultValue()");
+		
+		//controller.ngModel.gender = "M";
+	}
+	
+	$scope.StatusChange = function(fieldName, newValue, newObj, scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried StatusChange()");
+		
+//		if(fieldName == "DepartmentCode")
+//			newObj.DepartmentCode = newObj.DepartmentCode.toUpperCase(); 
+	}
+	
+	$scope.ValidateBuffer = function(scope, iElement, iAttrs, controller){
+		console.log("<"+iElement[0].tagName+">" +" Directive overried ValidateBuffer()");
+		
+		//controller.ngModel.DepartmentCode = "ABC"
+
+        return true;
+	}
+
+    $scope.CustomSelectedToRecord = function(sRecord, rowScope, scope, iElement, controller){
+        console.log("<"+iElement[0].tagName+">" +" Directive overried CustomPointedToRecord()");
+        $scope.amendForm = sRecord;
+        $scope.deleteForm = sRecord;
+        
+		var prgmID = scope.programId;
+        
+        if(prgmID == "ei01ep"){
+            $scope.directiveCtrlDict["process_ei01ep"].ngModel.evaluationCode = {};
+            $scope.directiveCtrlDict["process_ei01ep"].ngModel.evaluationCode.EvaluationCode = sRecord["EvaluationCode"];
+            $scope.directiveCtrlDict["process_ei01ep"].ngModel.evaluationCode.EvaProposalID = sRecord["EvaProposalID"];
+//            $scope.directiveCtrlDict["ei01ep"].ngModel.evaluationCode = sRecord;
+            
+            $scope.selectedEvaProposal = sRecord;
+            $scope.directiveScopeDict["process_ei01ep"].SubmitData();
+            
+            $scope.directiveCtrlDict["process_ep01de"].ngModel.EvaProposalID = sRecord["EvaProposalID"];
+        }
+        
+        $scope.evaluationTable = [];
+
+        $scope.questionTable = [];
+        $scope.questionResultTable = [];
+
+        $scope.qtnnaireModel.questionnaireTable = [];
+
+        $scope.qtnnaireModel.ratingMarksQtnList = [];
+        $scope.qtnnaireModel.openEndQtnList = [];
+    }
+
+    $scope.CustomSubmitDataResult = function(responseObj, httpStatusCode, scope, element, attrs, ctrl){
+        var prgmID = scope.programId;
+        if(prgmID == "ei01ep"){
+            
+            var questionnaireTable = responseObj.data.ActionResult.questionnaireTable;
+            var questionTable = responseObj.data.ActionResult.questionTable;
+            var qtnResultTable = responseObj.data.ActionResult.questionResultTable;
+            var evaluationTable = responseObj.data.ActionResult.evaluationTable;
+            
+            $scope.evaluationTable = evaluationTable;
+            $scope.questionResultTable = qtnResultTable;
+            
+            $scope.questionTable = questionTable;
+            $scope.qtnnaireModel.questionnaireTable = questionnaireTable;
+            
+            $scope.qtnnaireModel.ratingMarksQtnList = [];
+            $scope.qtnnaireModel.openEndQtnList = [];
+            
+            $scope.qtnnaireModel.qtnAns = [];
+            $scope.RatingMarksQuestion();
+            $scope.OpenEndQuestion();
+            
+            $scope.DisplayQuestionResult();
+            
+            $("#questionnaireProcess").show();
+        }else{
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            $scope.directiveScopeDict["pageview_ei01ep"].ClearNRefreshData();
+            if($scope.qtnnaireModel.Submit == "S")
+                $("#questionnaireProcess").hide();
+        }
+    }
+    
+    $scope.ValidateQuestionnaireEditable = function(){
+        var evaluationRcd = $scope.evaluationTable[0];
+        var startDate = new Date(evaluationRcd.StartDate);
+        var endDate = new Date(evaluationRcd.EndDate);
+        var today = new Date();
+        
+        var msgList = [];
+        var msg = "";
+        var questionnaireEditable = false;
+        if(today >= startDate && today <= endDate){
+            msg = "The evaluation is being";
+        }else if(today > endDate){
+            msg = "The evaluation was finished";
+        }else{
+            questionnaireEditable = true;
+        }
+        
+        msg+=". Not allowed to amend the questionnaire."
+        
+        msgList.push(msg);
+        
+        if(questionnaireEditable){
+            $scope.directiveScopeDict["ep01qd"].UnLockAllControls();
+        }else{
+            $scope.directiveScopeDict["ep01qd"].LockAllControls();
+            MessageService.setMsg(msgList);
+        }
+    }
+    
+    $scope.DisplayQuestionResult = function(){
+        for(var qtnRcdIndex in $scope.questionTable){
+            var qtnRcd = $scope.questionTable[qtnRcdIndex];
+            var qtnType = qtnRcd.Type;
+            var qtnID = qtnRcd["QuestionID"];
+            
+            var result;
+            for(var resultRcdIndex in $scope.questionResultTable){
+                var resultRcd = $scope.questionResultTable[resultRcdIndex];
+                var resultQtnID = resultRcd["QuestionID"];
+                
+                if(qtnID == resultQtnID){
+                    result = resultRcd["Result"];
+                    
+                    if(qtnType=="M")
+                        result = parseInt(result);
+                    break;
+                }
+            }
+            $scope.qtnnaireModel.qtnAns[qtnID] = result;
+        }
+    }
+    
+    $scope.RatingMarksQuestion = function(){
+        var ratingQtnList = [];
+        for(var qtnIndex in $scope.questionTable){
+            var qtnRcd = $scope.questionTable[qtnIndex];
+            var qtnID = qtnRcd.QuestionID;
+            if(qtnRcd.Type == "M"){
+                ratingQtnList.push(qtnRcd);
+                $scope.qtnnaireModel.qtnAns[qtnID] = 1;
+            }
+        }
+        $scope.qtnnaireModel.ratingMarksQtnList = ratingQtnList;
+        return ratingQtnList;
+    }
+    
+    $scope.OpenEndQuestion = function(){
+        var openEndQtnList = [];
+        for(var qtnIndex in $scope.questionTable){
+            var qtnRcd = $scope.questionTable[qtnIndex];
+            var qtnID = qtnRcd.QuestionID;
+            if(qtnRcd.Type == "O"){
+                openEndQtnList.push(qtnRcd);
+                $scope.qtnnaireModel.qtnAns[qtnID] = "";
+            }
+        }
+        $scope.qtnnaireModel.openEndQtnList = openEndQtnList;
+        return openEndQtnList;
+    }
+    
+}]);
+</script>
+<!-- InstanceEndEditable -->
+</head>
+
+<body ng-app="myApp">
+<div id="top">
+  <div id="topBar"> <!-- InstanceBeginEditable name="topbar" --> <!-- InstanceEndEditable --> </div>
+</div>
+<!-- header start -->
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container">
+  <!-- InstanceBeginEditable name="header" -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">360° Evaluation System</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav" id="bs-example-navbar-collapse-1">
+        <li><a href="main-menu.html">Home <span class="fa fa-home fa-lg"></span></a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Evaluation <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header menu-admin">Evaluation Master</li>
+            <li class="menu-admin"><a href="create-evaluation.html">Create</a></li>
+            <li class="menu-admin"><a href="amend-evaluation.html">Amend</a></li>
+            <li class="menu-admin"><a href="delete-evaluation.html">Delete</a></li>
+            <li role="separator" class="divider menu-admin"></li>
+            <li class="dropdown-header">Evaluation Operation</li>
+            <li class="menu-admin"><a href="process-questionnaire-design.html">Questionnaire Design</a></li>
+            <li class="menu-admin"><a href="process-gen-eva-proposal.html">Generate Evaluation Proposal</a></li>
+            <li><a href="create-evaluation-entry.html">360 Degree Evaluation Entry</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Report</li>
+            <li><a href="Individual-report.html">Individual Report(Self)</a></li>
+          </ul>
+        </li>
+        <li class="dropdown menu-admin">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Staff <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">Staff Profile</li>
+            <li><a href="create-staff-profile.html">Create</a></li>
+            <li><a href="amend-staff-profile.html">Amend</a></li>
+            <li><a href="delete-staff-profile.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Utility</li>
+            <li><a href="import-export-staff.html">Staff Import/Export</a></li>
+          </ul>
+        </li>
+        <li class="dropdown menu-admin">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Master <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">Utility</li>
+            <li><a href="import-export-master.html">Master Import/Export</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Vendor</li>
+            <li><a href="create-vendor.html">Create</a></li>
+            <li><a href="amend-vendor.html">Amend</a></li>
+            <li><a href="delete-vendor.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Department</li>
+            <li><a href="create-department.html">Create</a></li>
+            <li><a href="amend-department.html">Amend</a></li>
+            <li><a href="delete-department.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Staff Grade</li>
+            <li><a href="create-staffgrade.html">Create</a></li>
+            <li><a href="amend-staffgrade.html">Amend</a></li>
+            <li><a href="delete-staffgrade.html">Delete</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">Position</li>
+            <li><a href="create-position.html">Create</a></li>
+            <li><a href="amend-position.html">Amend</a></li>
+            <li><a href="delete-position.html">Delete</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="personal-profile.html">Personal profile <span class="fa fa-user fa-lg"></span></a></li>
+        <li><a href="#" logout>Logout <span class="fa fa-sign-out fa-lg"></span></a></li>
+      </ul>
+    </div>
+  <!-- InstanceEndEditable -->
+  </div>
+</nav>
+<!-- header end -->
+<div class="container">
+<!-- InstanceBeginEditable name="page-header" -->
+<h1 class="page-header">360 Degree Evaluation <small>Entry</small></h1>
+<!-- InstanceEndEditable -->
+<!-- site position start --> 
+<!-- InstanceBeginEditable name="position" -->
+<div id="site_position">
+    <ol class="breadcrumb">
+      <li><a href="index.html">Home</a></li>
+      <li>Evaluation</li>
+      <li><a href="process-questionnaire-design.html">360 Degree Evaluation</a></li>
+    </ol>
+</div>
+<!-- InstanceEndEditable --> 
+</div>
+<!-- site position end --> 
+<div class="container">
+<!-- InstanceBeginEditable name="intro" -->
+<div ng-controller="mainCtrl">
+	<process ng-model="processModel" program-id="ei01wu"></process>
+</div>
+<div ng-controller="testCtrl">
+    <div class="panel panel-default">
+      <div class="panel-heading">Process Message</div>
+      <div class="panel-body">
+        <message ng-model="processMsg">
+          <div class="well well-sm" ng-if="msgCtrl.ngModel.length > 0">
+            <div ng-repeat="dspMsg in msgCtrl.ngModel track by $index" ng-bind="dspMsg"></div>
+          </div>
+        </message>
+      </div>
+    </div>
+    <process ng-model="evaProProcessModel" program-id="ei01ep">
+        <form ng-submit="SubmitData()">
+            <fieldset>
+              <legend>Select Evaluatee:</legend>
+                <pageview ng-model="evaProModel" program-id="ei01ep">
+                    <screen></screen>
+                </pageview>
+            </fieldset>
+        </form>
+    </process>
+    <process ng-model="qtnnaireModel" program-id="ep01de" id="questionnaireProcess">
+        <form ng-submit="SubmitData()" class="form-horizontal">
+            <fieldset>
+              <legend>Questionnaire</legend>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Evaluation Code</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-static">{{qtnnaireModel.questionnaireTable[0].EvaluationCode}}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Description</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-static">{{qtnnaireModel.questionnaireTable[0].Description}}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Evaluation Proposal ID</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-static">{{selectedEvaProposal["EvaProposalID"]}}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Evaluatee</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-static">{{selectedEvaProposal["Evaluatee"]}}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Evaluator</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-static">{{selectedEvaProposal["Evaluator"]}}</p>
+                    </div>
+                </div>
+              <legend>Part 1 - Rating Question</legend>
+                <div class="form-group" ng-repeat="qtnRcd in qtnnaireModel.ratingMarksQtnList">
+                    <p class="form-control-static">Q{{$index+1}}. {{qtnRcd.Question}}</p>
+                    <label class="radio-inline">
+                      <input type="radio" name="qtnMark{{qtnRcd.QuestionID}}" value="1" ng-model="qtnnaireModel.qtnAns[qtnRcd.QuestionID]">1 - Disagree
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" name="qtnMark{{qtnRcd.QuestionID}}" value="2" ng-model="qtnnaireModel.qtnAns[qtnRcd.QuestionID]">2 - Slightly Disagree
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" name="qtnMark{{qtnRcd.QuestionID}}" value="3" ng-model="qtnnaireModel.qtnAns[qtnRcd.QuestionID]">3 - Slightly Agree
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" name="qtnMark{{qtnRcd.QuestionID}}" value="4" ng-model="qtnnaireModel.qtnAns[qtnRcd.QuestionID]">4 - Agree
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" name="qtnMark{{qtnRcd.QuestionID}}" value="5" ng-model="qtnnaireModel.qtnAns[qtnRcd.QuestionID]">5 - Strongly Agree
+                    </label>
+                </div>
+              <legend>Part 2 - Open End Question</legend>
+                <div class="form-group" ng-repeat="qtnRcd in qtnnaireModel.openEndQtnList">
+                    <label for="inputQtn{{$index}}">Q{{$index+1+qtnnaireModel.ratingMarksQtnList.length}}. {{qtnRcd.Question}}</label>
+                    <textarea type="text" class="form-control" id="qtnComment{{qtnRcd.QuestionID}}" ng-model="qtnnaireModel.qtnAns[qtnRcd.QuestionID]" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-default" ng-click="qtnnaireModel.Submit='D'">Save as Draft</button>
+                    <button type="submit" class="btn btn-default" ng-click="qtnnaireModel.Submit='S'">Submit</button>
+                </div>
+            </fieldset>
+        </form>
+    </process>
+</div>
+<!-- InstanceEndEditable -->
+</div>
+<div class="container" id="content"> <!-- InstanceBeginEditable name="content" -->
+  <div id="vendorItem"> </div>
+  <!-- InstanceEndEditable -->
+  <div id="lasted_update"></div>
+</div>
+<div id="footer">
+  <footer class="text-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12">
+            <p>Copyright © MyCompany. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+  </footer>
+</div>
+</body>
+<!-- InstanceEnd --></html>
