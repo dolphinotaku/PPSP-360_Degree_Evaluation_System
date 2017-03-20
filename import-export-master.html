@@ -147,7 +147,6 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
             <li role="separator" class="divider menu-admin"></li>
             <li class="dropdown-header">Evaluation Operation</li>
             <li class="menu-admin"><a href="process-questionnaire-design.html">Questionnaire Design</a></li>
-            <li class="menu-admin"><a href="process-questionnaire-design.html">Questionnaire Design</a></li>
             <li class="menu-admin"><a href="process-gen-eva-proposal.html">Generate Evaluation Proposal</a></li>
             <li class="menu-admin"><a href="evaluation-proposal-entry.html">View Evaluation Proposal</a></li>
             <li><a href="create-evaluation-entry.html">360 Degree Evaluation Entry</a></li>
@@ -251,7 +250,7 @@ app.controller('createDepartmentController', ['$scope', 'Security', function ($s
       Upload excel file: 
       <upload ng-model="uploadFileInfo">
         <button type="file" class="btn btn-default" ngf-select="UploadData($file)"
-          accept=".xls, .xlsx" ngf-max-size="10MB">Select Signle File</button><br>
+          accept=".xls, .xlsx" ngf-max-size="10MB">Select Single File</button><br>
         <div ng-repeat="(key, value) in uploadInfo track by $index">
           File name: {{value.name}}<br>
           Size: {{value.size}} ({{value.uploadProgress}}%)<br>

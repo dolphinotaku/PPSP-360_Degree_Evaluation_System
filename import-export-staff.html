@@ -235,7 +235,7 @@ app.controller('imExStaffController', ['$scope', 'Security', function ($scope, S
       Upload excel file: 
       <upload ng-model="uploadFileInfo">
         <button type="file" class="btn btn-default" ngf-select="UploadData($file)"
-          accept=".xls, .xlsx" ngf-max-size="10MB">Select Signle File</button><br>
+          accept=".xls, .xlsx" ngf-max-size="10MB">Select Single File</button><br>
         <div ng-repeat="(key, value) in uploadInfo track by $index">
           File name: {{value.name}}<br>
           Size: {{value.size}} ({{value.uploadProgress}}%)<br>

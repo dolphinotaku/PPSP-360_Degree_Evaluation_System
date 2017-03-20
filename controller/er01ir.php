@@ -610,7 +610,7 @@ function SaveAndDownload($objPHPExcel, &$processMessageList, $evaluationCode, $s
 	            chdir(BASE_3RD."PDF engine/");
 	            $cmdOutput = shell_exec("cpdf.exe -encrypt AES256ISO \"360Evaluation\" \"\" -no-edit ".$pdfWithMetaFilePath." -o ".$encrptyPdfFilePath);
 	//            array_push($processMessageList, "cpdf.exe -encrypt AES256ISO \"360Evaluation\" \"\" -no-edit ".$pdfFilePath." -o ".$encrptyPdfFilePath);
-	            array_push($processMessageList, "PDF report was encrptyed.");
+	            array_push($processMessageList, "PDF report was encrypted.");
 	            $exportedReportPath = $encrptyPdfFilePath;
 	        }
 	        else{
