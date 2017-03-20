@@ -252,15 +252,10 @@ app.directive('pageview', ['$rootScope',
 
             $scope.pointedRecord = {};
             
-//            var target = angular.element(event.target);
-            
             // check parent scope, is editbox
             var isParentScopeFromEditbox = false;
             if(typeof ($scope.$parent.SetEditboxNgModel) == "function")
                 isParentScopeFromEditbox = true;
-            
-//            console.log("<pageview> - isParentScopeFromEditbox: "+isParentScopeFromEditbox);
-//            console.dir(sRecord)
             
             if(isParentScopeFromEditbox){
                 $scope.$parent.SetEditboxNgModel(sRecord);
@@ -281,11 +276,8 @@ app.directive('pageview', ['$rootScope',
             var pageNum = $scope.pageNum;
 
             $scope.DisplayMessage = "";
-            // $scope.dataSource = [];
-            // $scope.sortedDataSource = [];
             $scope.currentPageRecords = {};
             $ctrl.ngModel = {};
-            // $scope.maxRecordsCount = -1;
             $scope.getNextPageTimes = 0;
             
             $scope.TryToDisplayPageNum(pageNum, true);
@@ -331,14 +323,11 @@ app.directive('pageview', ['$rootScope',
                 return;
             }
             if($scope.lastPageNum != -1){
-    			// $scope.pageNum = $scope.lastPageNum;
                 $scope.pageNum++;
     			$scope.TryToDisplayPageNum($scope.pageNum);
     			return;
     		}
 
-    		// console.log("GotoLastPageRecord() have not implement")
-    		// return;
     		$scope.pageNum++;
     		var pageNum = $scope.pageNum;
 
@@ -354,7 +343,6 @@ app.directive('pageview', ['$rootScope',
     		var recordNumberStart = (pageNum - 1) * numOfRecordPerPage;
     		var recordNumberEnd = pageNum * numOfRecordPerPage - 1;
     		var isAllRecordsExists = true;
-            console.log(recordNumberStart, recordNumberEnd)
             if(typeof(clearNRefresh) == "undefined"){
                 clearNRefresh = false;
             }
@@ -386,8 +374,6 @@ app.directive('pageview', ['$rootScope',
 
                     var lastRecordIndex = $scope.sortedDataSource.length;
                     
-//                    console.log("TryToCallSetCriteriaBeforeGet() - pageNum: "+pageNum+", lastRecordIndex: "+lastRecordIndex+", ")
-
                     var newCriteriaObj = TryToCallSetCriteriaBeforeGet(pageNum, lastRecordIndex, criteriaObj);
                     
                     $scope.GetNextPageRecords(pageNum, lastRecordIndex, newCriteriaObj);
@@ -435,17 +421,6 @@ app.directive('pageview', ['$rootScope',
             var numOfRecordPerPage = $scope.numOfRecordPerPage;
             var recordOffset = (pageNum-1) * $scope.numOfRecordPerPage;
 
-            // $scope.DisplayMessage = "";
-        	// Convert the Key Value to Upper Case
-        	// console.dir(keyObj);
-        	// if(typeof(keyObj) == "undefined"){
-        	// 	keyObj = {};
-        	// }
-        	// for(var keyIndex in keyObj){
-        	// 	if(typeof(keyObj[keyIndex]) == "string")
-        	// 		keyObj[keyIndex] = keyObj[keyIndex].toUpperCase();
-        	// }
-
 			var submitData = {
 				"Session": clientID,
 				"Table": programId,
@@ -468,16 +443,6 @@ app.directive('pageview', ['$rootScope',
                 var data_or_JqXHR = responseObj.data;
                 httpResponseObj = responseObj;
                 $scope.UnLockAllControls();
-                
-//                if(data_or_JqXHR.Status != "success")
-//                    throw data_or_JqXHR;
-//                
-//                if(typeof(data_or_JqXHR.ActionResult.data) == "undefined")
-//                {
-//                    if($scope.getNextPageTimes == 1){
-//                        $scope.DisplayMessage = "Record Not Found.";
-//                    }
-//                }
 
                 SetRecordStructure(data_or_JqXHR);
                 AppendToDataSource(pageNum, data_or_JqXHR);
@@ -550,22 +515,6 @@ app.directive('pageview', ['$rootScope',
         var template = '' +
         	'<div class="panel panel-default" style="margin: 0px; padding: 0px;">' +
         	'<div class="panel-body">' +
-				// list win top bar
-				// '<div class="row">' +
-				// 	// search box
-				// 	'<div class="col-sm-offset-2 col-sm-8 col-xs-12">' +
-				// 		'<form class="pageview-search">' +
-				// 		    '<div class="input-group">' +
-				// 		      '<input type="text" class="form-control" placeholder="Search for...">' +
-				// 		      '<span class="input-group-btn">' +
-				// 		        '<button class="btn btn-default" type="button">Go!</button>' +
-				// 		      '</span>' +
-				// 		    '</div>' +
-				// 		'</form>' +
-				// 	'</div>'+
-				// '</div>' +
-				// inside of the ng-transclude
-				//'<div ng-transclude></div>' +
 				'<div class="custom-transclude"></div>' +
             '</div>' +
             '<div class="panel-footer">' +
@@ -624,13 +573,6 @@ app.directive('pageview', ['$rootScope',
 		bindToController: {
 			ngModel: '=',
 			numOfRecordPerPage: '=pageRecordsLimit',
-			//criteria: '=',
-			// editMode: '=?',
-			// programId: '=',
-			// EventListener: '=',
-			// SubmitData: '=',
-			// DisplayCustomData: '=',
-			// DisplaySubmitDataResultMessage: '=',
 		},
 		template: templateFunction,
 		compile: function compile(tElement, tAttrs, transclude) {
@@ -749,9 +691,6 @@ app.directive('entry', ['$rootScope',
             var elms = [].slice.call($element[0].querySelectorAll('editbox[ng-model]'), 0);
 
             // get the ngModelControllerArray
-            // var controllers = elms.map(function(el){
-            //   return angular.element(el).controller('ngModel');
-            // });
             var scopes = elms.map(function(el){
               return angular.element(el).scope();
             });
@@ -768,17 +707,10 @@ app.directive('entry', ['$rootScope',
 		
 		$scope.SetNgModel = function(dataRecord){
 			var dataJson = {};
-			//dataJson.data = {};
-			//dataJson.data.Items = [];
-			//dataJson.data.Items[1] = dataRecord;
-			//console.dir(dataJson)
-			//SetNgModel(dataJson);
 			SetNgModel(dataRecord);
 		}
 
         function SetNgModel(dataJson){
-//        	var items = dataJson.data.Items[1];
-//        	var itemsColumn = dataJson.data.DataColumns;
             var dataRecord = dataJson.ActionResult.data[0];
             
             var tableSchema = dataJson.ActionResult.table_schema;
@@ -808,9 +740,6 @@ app.directive('entry', ['$rootScope',
         			}
         		}
                 
-                console.log(typeof dataValue);
-                console.log(dataValue);
-                
         		if (colDataType == "date"){
                     if(typeof dataValue == "string"){
                         var dateArray = dataValue.split("-");
@@ -833,56 +762,8 @@ app.directive('entry', ['$rootScope',
                 $ctrl.ngModel[columnName] = newColumn;
         	}
 
-//            if(items == null || typeof(items) == "undefined"){
-//                console.log("Responsed {data:items{}} is null")
-//                return;
-//            }
-//
-//        	for(var colIndex in itemsColumn){
-//        		var columnName = itemsColumn[colIndex];
-//
-//                var isSystemField = Core.IsSystemField(columnName);
-//                if(isSystemField)
-//                    continue;
-//
-//        		var colDataType = Core.ConvertMySQLDataType(itemsColumn[colIndex].type);
-//
-//        		// is column exists in ngModel
-//        		if(typeof($ctrl.ngModel[columnName]) == "undefined"){
-//        			if(colDataType == "string"){
-//        				$ctrl.ngModel[columnName] = "";
-//        			}
-//        			else if (colDataType == "date"){
-//        				$ctrl.ngModel[columnName] = new Date(0, 0, 0);
-//        			}
-//        			else if (colDataType == "double"){
-////        				$ctrl.ngModel[columnName] = 0.0;
-//        			}
-//        		}
-//        		var newColumn = $ctrl.ngModel[columnName];
-//
-//        		if (colDataType == "date"){
-//					console.log(typeof items[colIndex]);
-//					var dateArray = items[colIndex].split("-");
-//					var year = dateArray[0]; var month = dateArray[1]; var day = dateArray[2];
-//					year = parseInt(year);
-//					month = parseInt(month);
-//					day = parseInt(day);
-//    				newColumn = new Date(year, month, day);
-//    			}
-//    			else if (colDataType == "double"){
-//    				newColumn = parseFloat(items[colIndex]);
-//    			}
-//    			else{
-//    				newColumn = items[colIndex];
-//    			}
-//
-//                $ctrl.ngModel[columnName] = newColumn;
-//        	}
-
         }
         function GetTableStructure(){
-            // $scope.LockAllControls();
         	var url = $rootScope.serverHost;
         	var clientID = Security.GetSessionID();
         	var programId = $scope.programId.toLowerCase();
@@ -967,8 +848,6 @@ app.directive('entry', ['$rootScope',
     						", $ctrl.ngModel:"+$ctrl.ngModel[columnName]);
     				}
     			}
-
-    			//$scope[columnName] = colObj;
 
     			$ctrl.ngModel[columnName] = colObj;
         	}
@@ -1592,7 +1471,6 @@ app.directive('entry', ['$rootScope',
         		"Items":{}
         	}
         	updateObj.Header[1] = {};
-        	//updateObj.Header[1] = recordObj;            
             updateObj.Header[1] = ConvertEntryModelStrictWithSchema(recordObj);
 
         	var isRowEmpty = jQuery.isEmptyObject(updateObj.Header[1])
@@ -1604,7 +1482,6 @@ app.directive('entry', ['$rootScope',
 				"Session": clientID,
 				"Table": programId,
 				"Data": updateObj,
-				//"NextPage" : "true"
 			};
             submitData.Action = "UpdateData";
 
@@ -1635,8 +1512,6 @@ app.directive('entry', ['$rootScope',
         		"Items":{}
         	}
         	deleteObj.Header[1] = {};
-        	//deleteObj.Header[1] = recordObj;
-//            deleteObj.Header[1] = ConvertKeyFieldToUppercase(recordObj, true);
             deleteObj.Header[1] = ConvertKeyFieldToUppercase(recordObj, true);
 
         	var isRowEmpty = jQuery.isEmptyObject(deleteObj.Header[1]);
@@ -1649,7 +1524,6 @@ app.directive('entry', ['$rootScope',
 				"Session": clientID,
 				"Table": programId,
 				"Data": deleteObj,
-				//"NextPage" : "true"
 			};
             submitData.Action = "DeleteData";
 
@@ -1724,14 +1598,6 @@ app.directive('entry', ['$rootScope',
         var globalCriteria = $rootScope.globalCriteria;
 
         var template = '' +
-          // outside of the ng-transclude
-          // '<div>'+
-          // '</div>' +
-          // '<div class="well well-sm">'+
-          // '<p ng-repeat="dspMsg in DisplayMessageList track by $index" ng-bind="dspMsg"></p>'+
-          // '</div>' +
-          // inside of the ng-transclude
-          //'<div ng-transclude></div>' +
           '<div class="custom-transclude"></div>';
         return template;
     }
@@ -1753,12 +1619,6 @@ app.directive('entry', ['$rootScope',
 		//If both bindToController and scope are defined and have object hashes, bindToController overrides scope.
 		bindToController: {
 			ngModel: '=',
-			//editMode: '=?',
-			// programId: '=',
-/*
-			EventListener: '=',
-			SubmitData: '=',
-			*/
 		},
 		template: templateFunction,
 		compile: function compile(tElement, tAttrs, transclude) {
@@ -1769,9 +1629,7 @@ app.directive('entry', ['$rootScope',
 		        post: function postLink(scope, iElement, iAttrs, controller) {
 		            //console.log("entry postLink() compile");
 
-                    // "scope" here is the directive's isolate scope 
-                    // iElement.find('.custom-transclude').append(
-                    // );
+                    // "scope" here is the directive's isolate scope
                     transclude(scope, function (clone, scope) {
                         iElement.find('.custom-transclude').append(clone);
                     })
@@ -2132,13 +1990,6 @@ app.directive('editbox', ['Security', '$rootScope', '$compile', function(Securit
 		        post: function postLink(scope, iElement, iAttrs, controller) {
                     // hiding the <pageview> element
 					angular.element(iElement).find("pageview").hide();
-                    
-//                    iAttrs.$observe('rangeValue', function(interpolatedValue){
-//                        
-//                        if(typeof (scope.$parent.SetRange) == "function"){
-//                            scope.$parent.SetRange(iAttrs.range, iAttrs.rangeValue)
-//                        }
-//                    })
 		        }
 		    }
 		},
@@ -2792,11 +2643,8 @@ app.directive('upload', [
                 // deferred.then( doneCallbacks, failCallbacks [, progressCallbacks ] )
                 uploadAction.then(function (response) {
                     uploadInfoRecord.uploadResult = response.data;
-                    //if(response.data.error)
-                    //$scope.errorMsg = response.data.error + " - "+response.data.errorMsg
 
                     $scope.uploadInfo[recordCount] = uploadInfoRecord;
-                    // $ctrl.ngModel = $scope.uploadInfo;
 
                     $scope.uploadResult[$scope.uploadResult.length] = response.data;
                     $ctrl.ngModel = $scope.uploadResult;
@@ -2811,13 +2659,9 @@ app.directive('upload', [
 
                 return uploadAction;
 
-
-            // if(typeof callback == "function")
-            //     callback($scope.uploadInfo[recordCount]);
         }
 
         $scope.UploadData = function(files){
-            // console.dir(files)
             UploadFileList(files);
         }
 
@@ -3223,27 +3067,6 @@ app.directive('range', ['$rootScope',
 //            }
         }
         
-//        $scope.$watchCollection(
-//
-//          // This function returns the value being watched. It is called for each turn of the $digest loop
-//          function() { return $ctrl.ngModel },
-//            
-//          // This is the change listener, called when the value returned from the above function changes
-//          function(newValue, oldValue) {
-//              
-//          }
-//        );
-        
-//        $scope.$watch(
-//            function () {return $ctrl.ngModel.isAll},
-//            function(newValue, oldValue){
-//                if(newValue){
-//                    $ctrl.ngModel.start = "ALL";
-//                }else{
-//                    $ctrl.ngModel.start = "";
-//                }
-//            }
-//        );
     }
     function templateFunction(tElement, tAttrs) {
         var globalCriteria = $rootScope.globalCriteria;
@@ -3316,22 +3139,12 @@ app.directive('process', ['$rootScope',
             var editMode;
             var programID;
 
-//            function findEditMode() {
-//                var object = $scope.editMode = FindEditModeEnum($attrs.editMode);
-//                return object;
-//            }
             function findProgramID(){
                 var object = $attrs.programId;
                 return object;
             }
 
             return {
-//                getEditMode: function () {
-//                    if (!editMode) {
-//                        editMode = findEditMode();
-//                    }
-//                    return editMode;
-//                },
                 getProgramID: function(){
                     var isProgramIdFound = false;
                     if(!programID){
@@ -3354,7 +3167,6 @@ app.directive('process', ['$rootScope',
 
         function InitializeProcess() {
         	$scope.tableStructure = {};
-//            DirectiveProperties.getEditMode();
             DirectiveProperties.getProgramID();
             
             $scope.DisplayMessageList = MessageService.getMsg();
@@ -3445,7 +3257,6 @@ app.directive('process', ['$rootScope',
                 // Always execute unlock on both error and success
                 $scope.UnLockAllControls();
                 $scope.HideLoadModal();
-
                 if(msg.length > 0)
                     MessageService.addMsg(msg);
                 SubmitDataResult(httpResponseObj, httpResponseObj.status);

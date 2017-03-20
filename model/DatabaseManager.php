@@ -203,38 +203,6 @@ class DatabaseManager{
         $result = $this->dbc->query($sql_str);
         return $result;
     }
-	
-    // Deprecated, can be remove on the next time you see
-//	function selectFirstRowFirstElement($sql_str, $isDebug=false) {
-//		$result = $this->dbc->query($sql_str);
-//		$row = $result->fetch_array(MYSQLI_NUM);
-//		//	echo $row[0]."hellp";
-//		//ec
-//		if($isDebug===true){
-//			echo "<br>";
-//			$this->debug($sql_str);  //debug
-//			echo "<br>";
-//			echo "result: ".var_dump($result);
-//			echo "<br>";
-//			echo "elelment".$row[0]."elelment";
-//		}
-//		if($row[0])
-//			return $row[0];
-//		else
-//			return false;
-//		/*
-//		if($result->num_rows)
-//		{
-//			$row = $result->fetch_array(MYSQLI_BOTH);
-//			echo $row[0]
-//			return $result->num_rows;
-//		}
-//		*/
-//        if($result===false){
-//        	return $this->debug($sql_str)."<br><br>".$result."<br><br><pre>".print_r($this->dbc->error_list)."</pre>";
-//        }
-//        return $result;
-//	}
 
 	/**
 	 * call query() to execute sql query,
