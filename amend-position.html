@@ -45,6 +45,8 @@ app.run(function ($rootScope, $log, Security) {
 });
 
 app.controller('createPositionController', ['$scope', 'Security', function ($scope, Security, $rootScope) {
+	$scope.directiveScopeDict = {};
+	$scope.directiveCtrlDict = {};
 	function Initialize(){
 		var entryForm = {};
 		
@@ -54,11 +56,11 @@ app.controller('createPositionController', ['$scope', 'Security', function ($sco
 	
 	$scope.EventListener = function(scope, iElement, iAttrs, controller){
 		console.log("<"+iElement[0].tagName+">" +" Directive overried EventListener()");
-		
-//		console.dir(scope);
-//		console.dir(iElement);
-//		console.dir(iAttrs);
-//		console.dir(controller);
+		var prgmID = scope.programId;
+		if($scope.directiveScopeDict[prgmID] == null || typeof($scope.directiveScopeDict[prgmID]) == "undefined"){
+		  $scope.directiveScopeDict[prgmID] = scope;
+		  $scope.directiveCtrlDict[prgmID] = controller;
+		}
 		
 		//http://api.jquery.com/Types/#Event
 		//The standard events in the Document Object Model are:

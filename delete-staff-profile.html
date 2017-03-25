@@ -74,6 +74,10 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
         var scopeID = scope.$id;
         var hashID = scopeID + '_' + tagName + '_' + prgmID;
         
+        var tagName = iElement[0].tagName.toLowerCase();
+		var prgmID = scope.programId;
+        var scopeID = scope.$id;
+        var hashID = scopeID + '_' + tagName + '_' + prgmID;
 		if($scope.directiveScopeDict[hashID] == null || typeof($scope.directiveScopeDict[hashID]) == "undefined"){
 		  $scope.directiveScopeDict[hashID] = scope;
 		  $scope.directiveCtrlDict[hashID] = controller;
@@ -117,31 +121,6 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
 		var employmentDate = record.EmploymentDate;
 		var probationEndDate = record.ProbationEndDate;
 		var birthday = record.BirthDay;
-		
-		// validate staffID
-		if(!staffID || staffID == ""){
-			isValid = false;
-			msg.push("Please select a staff record");
-			MessageService.setMsg(msg);
-            $("html, body").animate({ scrollTop: 0 }, "slow");
-            return false;
-		}
-		
-		// validate Probation End Eate should on or before the Employment Date
-		if(probationEndDate.getTime() < employmentDate.getTime()){
-			isValid = false;
-			msg.push("Probation End Date should on or before the Employment Date");
-		}
-		// validate birthday should before the employment date
-		if(birthday.getTime() >= employmentDate.getTime()){
-			isValid = false;
-			msg.push("Birthday should before the Employment Date");
-		}
-		
-		if(!isValid){
-			MessageService.setMsg(msg);
-            $("html, body").animate({ scrollTop: 0 }, "slow");
-		}
 		
         return isValid;
 	}
@@ -196,9 +175,13 @@ app.controller('createPositionController', ['$scope', 'Security', 'MessageServic
     }
 
     $scope.CustomSubmitDataResult = function(responseObj, httpStatusCode, scope, element, attrs, ctrl){
-        var prgmID = scope.programId;
-        if(prgmID == "es01sg"){
-          $scope.directiveScopeDict["ew01sg"].ClearNRefreshData();
+        var tagName = element[0].tagName.toLowerCase();
+        var prgmID = scope.programId.toLowerCase();
+        var scopeID = scope.$id;
+        var hashID = scopeID + '_' + tagName + '_' + prgmID;
+        
+        if(hashID == "8_entry_ee01sf"){
+          $scope.directiveScopeDict["6_pageview_ew01sf"].ClearNRefreshData();
             $("html, body").animate({ scrollTop: 0 }, "slow");
         }
     }
