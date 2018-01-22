@@ -2,44 +2,33 @@
 "use strict";
 // jQuery conflict with native prototype.
 
-Object.defineProperty(Object.prototype, 'IsEmptyObject', {
-  value : function() {
-		var obj = this;
-		for (var prop in obj) {
-			if (obj.hasOwnProperty(prop))
-				return false;
-		}
-	
-		return true;
-	},
-  enumerable : false
-});
-String.prototype.IsNullOrEmpty = function(){
-	  	var curStr = this;
-		var isNullOrEmpty = false;
-		if(typeof(curStr) == "undefined")
-			isNullOrEmpty = true;
-		else if(curStr == null)
-			isNullOrEmpty = true;
-		else if(curStr == "")
-			isNullOrEmpty = true;
-		return isNullOrEmpty;
-}
-String.prototype.ReplaceAll = function(search, replacement) {
-    var target = this;
-    return target.replace(new RegExp(search, 'g'), replacement);
-};
-
-function getFunctionName(fun) {
-  var ret = fun.toString();
-  ret = ret.substr('function '.length);
-  ret = ret.substr(0, ret.indexOf('('));
-  return ret;
-}
-
 //angular.element() === jQuery() === $();
 // using the angular ui of Bootstrap
 var app = angular.module('myApp', ['ngCookies', 'ui.bootstrap', 'ngFileUpload']);
+
+app.constant('config', {
+	serverHost: serverHost,
+	webRoot: webRoot,
+	requireLoginPage: requireLoginPage,
+	afterLoginPage: afterLoginPage,
+	
+	editMode: directiveEditMode,
+	reservedPath: reservedPath,
+	CookiesEffectivePath: CookiesEffectivePath,
+});
+
+app.config(['config', '$httpProvider', function(config, $httpProvider) {
+	config.test = "Keith";
+	
+    delete $httpProvider.defaults.headers.common['X-Requested-With'];
+    $httpProvider.defaults.headers.post['Accept'] = 'application/json, text/javascript';
+    $httpProvider.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8';
+    // $httpProvider.defaults.headers.post['Access-Control-Max-Age'] = '1728000';
+    // $httpProvider.defaults.headers.common['Access-Control-Max-Age'] = '1728000';
+    $httpProvider.defaults.headers.common['Accept'] = 'application/json, text/javascript';
+    $httpProvider.defaults.headers.common['Content-Type'] = 'application/json; charset=utf-8';
+    $httpProvider.defaults.useXDomain = true;
+}]);
 
 app.service('Core', ['$rootScope', 'config', function($rootScope, config){
 	var core = this;
