@@ -1,0 +1,63 @@
+<html ng-app="dateTimeSandbox">
+<head>
+    <meta charset='utf-8'/>
+    <title>DatePicker Directive</title>
+    <link rel="stylesheet" href="../bootstrap-3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="build/css/bootstrap-datetimepicker.css">
+</head>
+<body>
+
+
+<div class="container" ng-controller="dateTimeController">
+    <div class="row">
+        <div class='col-sm-6'>
+            <h1> {{vm.message}}</h1>
+
+            <div class="form-group">
+
+            </div>
+            <label class="label label-info">DateTimePicker</label>
+            <br/>
+
+            <div class='input-group date' id='datetimepicker1'>
+                <input type='text' class="form-control"/>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+            </div>
+
+            <br/>
+            <label class="label label-info">DateTimePicker (Angular Directive)</label>
+
+            <br/>
+            <input type="text"
+                   class="form-control"
+                   ng-model="vm.dateTime"
+                   data-date-time-picker
+                   data-language="en"
+                   data-pick12HourFormat="false"
+                   data-use-current="true"
+					data-default-date="11/1/2013"
+                    />
+            <br/>
+            <pre>{{vm|json}}</pre>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../bootstrap-3.3.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../moment-master.2.8.4/moment.js"></script>
+<!--<script type="text/javascript" src="build\js\bootstrap-datetimepicker.min.js"></script>-->
+<script type="text/javascript" src="src/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="../angular.min.js"></script>
+<script type="text/javascript" src="datetimepickerDirective.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('#datetimepicker1').datetimepicker({
+            useCurrent: false
+        });
+    });
+</script>
+</body>
+</html>

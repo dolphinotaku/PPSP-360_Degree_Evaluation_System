@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Upload with form submit and validations:</title>
+  <style type="text/css">
+.thumb {
+    width: 24px;
+    height: 24px;
+    float: none;
+    position: relative;
+    top: 7px;
+}
+
+form .progress {
+    line-height: 15px;
+}
+}
+
+.progress {
+    display: inline-block;
+    width: 100px;
+    border: 3px groove #CCC;
+}
+
+.progress div {
+    font-size: smaller;
+    background: orange;
+    width: 0;
+}
+  </style>
+  <script type="text/javascript">
+    FileAPI = {
+      debug: true,
+      //forceLoad: true, html5: false //to debug flash in HTML5 browsers
+      //wrapInsideDiv: true, //experimental for fixing css issues
+      //only one of jsPath or jsUrl.
+      //jsPath: '/js/FileAPI.min.js/folder/',
+      //jsUrl: 'yourcdn.com/js/FileAPI.min.js',
+
+      //only one of staticPath or flashUrl.
+      //staticPath: '/flash/FileAPI.flash.swf/folder/'
+      //flashUrl: 'yourcdn.com/js/FileAPI.flash.swf'
+    };
+  </script>
+
+  <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+  <script src="ng-file-upload-12.2.12/demo/src/main/webapp/js/ng-file-upload-shim.js"></script>
+  <script src="ng-file-upload-12.2.12/demo/src/main/webapp/js/ng-file-upload.js"></script>
+  <script type="text/javascript">
+//inject angular file upload directives and services.
+var app = angular.module('fileUpload', ['ngFileUpload']);
+
+app.controller('MyCtrl', ['$scope', 'Upload', '$timeout', function ($scope, Upload, $timeout) {
+	$scope.httpResponse = {};
+    $scope.uploadPic = function(file) {
+      
+		file.upload = Upload.upload({
+		  //url: 'https://angular-file-upload-cors-srv.appspot.com/upload',
+				url: '../controller/documentUploader.for12.2.21.php',
+		  data: {file: file},
+		});
+		// http://api.jquery.com/deferred.then/#deferred-then-doneCallbacks-failCallbacks
+		// deferred.then( doneCallbacks, failCallbacks [, progressCallbacks ] )
+		file.upload.then(function (response) {
+			$scope.httpResponse = response.data;
+		  $timeout(function () {
+			file.result = response.data.size > 0;
+		  });
+			if(response.data.error)
+			$scope.errorMsg = response.data.error + " - "+response.data.errorMsg
+		}, function (response) {
+		  //if (response.status > 0)
+			//$scope.errorMsg = response.status + ': ' + response.data;
+			if(response.data.error)
+			$scope.errorMsg = response.data.error + " - "+response.data.errorMsg
+		}, function (evt) {
+		  // Math.min is to fix IE which reports 200% sometimes
+		  file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+		});
+    }
+}]);
+  </script>
+</head>
+
+<body ng-app="fileUpload" ng-controller="MyCtrl">
+  <form name="myForm">
+    <fieldset>
+      <legend>Upload Image on form submit</legend>
+	  
+      <br>File:
+      <input type="file" ngf-select ng-model="picFile" name="file"    
+             accept="image/*" ngf-max-size="2MB" required
+             ngf-model-invalid="errorFile">
+      <i ng-show="myForm.file.$error.required">*required</i><br>
+      <i ng-show="myForm.file.$error.maxSize">File too large 
+          {{errorFile.size / 1000000|number:1}}MB: max 2M</i>
+      <img ng-show="myForm.file.$valid" ngf-thumbnail="picFile" class="thumb"> <button ng-click="picFile = null" ng-show="picFile">Remove</button>
+      <br>
+      <button ng-disabled="!myForm.$valid" 
+              ng-click="uploadPic(picFile)">Submit</button>
+      <span class="progress" ng-show="picFile.progress >= 0">
+        <div style="width:{{picFile.progress}}%" 
+            ng-bind="picFile.progress + '%'"></div>
+      </span>
+      <span ng-show="picFile.result">Upload Successful</span>
+      <span class="err" ng-show="errorMsg">Status Code: {{errorMsg}}</span>
+    </fieldset>
+    <br>
+  </form>
+  <hr>
+  <form name="myForm2">
+    <fieldset>
+      <legend>Upload Excel on form submit</legend>
+      <br>File:
+      <input type="file" ngf-select ng-model="picFile2" name="file2"    
+             accept=".xls, .xlsx" ngf-max-size="10MB" required
+             ngf-model-invalid="errorFile">
+      <i ng-show="myForm2.file2.$error.required">*required</i><br>
+      <i ng-show="myForm2.file2.$error.maxSize">File too large 
+          {{errorFile.size / 1000000|number:1}}MB: max 10M</i>
+      <br>
+      <button ng-disabled="!myForm2.$valid" 
+              ng-click="uploadPic(picFile2)">Submit</button>
+      <span class="progress" ng-show="picFile2.progress >= 0">
+        <div style="width:{{picFile2.progress}}%" 
+            ng-bind="picFile2.progress + '%'"></div>
+      </span>
+      <span ng-show="picFile2.result">Upload Successful</span>
+      <span class="err" ng-show="errorMsg">Status Code: {{errorMsg}}</span>
+    </fieldset>
+    <br>
+  </form>
+  <hr>
+  HTTPResponse:<br>
+  <div style="font-size: 12px;">
+    <code>
+	  <pre>{{httpResponse | json}}</pre>
+    </code>
+  </div>
+</body>
+</html>
