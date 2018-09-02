@@ -372,7 +372,6 @@ function MergeQuestionMarksReport($objPHPExcel, $questionList, $qtnResultList){
         NULL,
         'A59'
     );
-    
         
     // prepare the question marks array
     $excelMarksArray = [];
@@ -381,7 +380,7 @@ function MergeQuestionMarksReport($objPHPExcel, $questionList, $qtnResultList){
     $totalCollaboratorMarks = 0;
     $totalAverageMarks = 0;
 	foreach($questionList as $keyIndex => $qtnRecord) {
-        
+        $questionID = $qtnRecord["QuestionID"];
         $bossMark = $qtnResultList["Boss"][$questionID]["Boss"];
         $selfMark = $qtnResultList["Self"][$questionID]["Self"];
         $collaboratorMark = $qtnResultList["Collaborator"][$questionID]["Collaborator"];
@@ -430,6 +429,16 @@ function MergeQuestionMarksReport($objPHPExcel, $questionList, $qtnResultList){
         NULL,
         'J59'
     );
+	
+	// set height for question title
+    for($qtnIndex = 0; $qtnIndex < $numOfQuestion; $qtnIndex++){
+		$qtnRecord = $questionList[$qtnIndex];
+        $questionTitle = $qtnRecord["Question"];
+		$numrows = getRowcountForQuestionTitle($questionTitle);
+		// set auto height for question title
+		//$objPHPExcel->getActiveSheet()->getRowDimension(58+$qtnIndex)->setRowHeight(-1);
+		$objPHPExcel->getActiveSheet()->getRowDimension(58+$qtnIndex+1)->setRowHeight($numrows * 15 + 2.25);
+    }
     
     return $objPHPExcel;
 }
@@ -502,19 +511,20 @@ function MergeQuestionCommentReport($objPHPExcel, $qtnRatingMark, $qtnCommentMar
             $objPHPExcel->getActiveSheet()->mergeCells('A'.($commentRowAt+$qtnIndex).':M'.($commentRowAt+$qtnIndex));
             $objPHPExcel->getActiveSheet()->getStyle('A'.($commentRowAt+$qtnIndex))->getAlignment()->setWrapText(true);
             // Autoheight doesn't work on merged cells.
-            $objPHPExcel->getActiveSheet()->getRowDimension(($commentRowAt+$qtnIndex))->setRowHeight(-1);
+			// set auto height for question title
+            //$objPHPExcel->getActiveSheet()->getRowDimension(($commentRowAt+$qtnIndex))->setRowHeight(-1);
         }
         
         // set height for Question Title
-        $numrows = getRowcount($questionTitle);
-        $objPHPExcel->getActiveSheet()->getRowDimension(($commentRowAt+4))->setRowHeight($numrows * 20 + 2.25);
+        $numrows = getRowcountForQuestionCommentTitle($questionTitle);
+        $objPHPExcel->getActiveSheet()->getRowDimension(($commentRowAt+1))->setRowHeight($numrows * 20 + 2.25);
         
         // set height for self comment
-        $numrows = getRowcount($selfMark);
+        $numrows = getRowcountForComment($selfMark);
         $objPHPExcel->getActiveSheet()->getRowDimension(($commentRowAt+4))->setRowHeight($numrows * 15 + 2.25);
-        $numrows = getRowcount($bossMark);
+        $numrows = getRowcountForComment($bossMark);
         $objPHPExcel->getActiveSheet()->getRowDimension(($commentRowAt+7))->setRowHeight($numrows * 15 + 2.25);
-        $numrows = getRowcount($collaboratorMark);
+        $numrows = getRowcountForComment($collaboratorMark);
         $objPHPExcel->getActiveSheet()->getRowDimension(($commentRowAt+8))->setRowHeight($numrows * 15 + 2.25);
         
         $commentAppendRows = sizeof($excelArray);
@@ -523,7 +533,9 @@ function MergeQuestionCommentReport($objPHPExcel, $qtnRatingMark, $qtnCommentMar
     return $objPHPExcel;
 }
 
-function getRowcount($text, $width=138) {
+// Autoheight doesn't work on merged cells. It seems this is a problem with Excel not PHPExcel.
+// https://stackoverflow.com/questions/13313048/phpexcel-dynamic-row-height-for-merged-cells
+function getRowcount($text, $width) {
     $rc = 0;
 //    $line = explode("\n", $text);
     $line = explode(PHP_EOL, $text);
@@ -531,6 +543,15 @@ function getRowcount($text, $width=138) {
         $rc += intval((strlen($source) / $width) +1);
     }
     return $rc;
+}
+function getRowcountForQuestionTitle($text, $width=82) {
+    return getRowcount($text, $width);
+}
+function getRowcountForQuestionCommentTitle($text, $width=101) {
+    return getRowcount($text, $width);
+}
+function getRowcountForComment($text, $width=138) {
+    return getRowcount($text, $width);
 }
 
 function SaveAndDownload($objPHPExcel, &$processMessageList, $evaluationCode, $staffResponseArray){
