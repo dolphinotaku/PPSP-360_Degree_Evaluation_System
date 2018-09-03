@@ -57,7 +57,7 @@ When admin performs Generate Evaluation Proposal, the following staffs will assi
 - your supervisor required to evaluate you if you have a supervisor
 - your subordinate(s) required to evaluate you if you have
 
-please add prefix `"gd00"` before the node showed in the hierarchy, pwd same as the user name
+please add prefix `"gd00"` before the node showed in the [hierarchy](https://github.com/keithbox/PPSP-360_Degree_Evaluation_System/blob/master/documentation/Organization%20Structure.JPG), pwd same as the user name
 for example, staff `gd00305` provided with questionnaire result and allowed to generate individual report
 ```
 id: gd00305
