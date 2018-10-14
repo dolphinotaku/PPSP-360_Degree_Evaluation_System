@@ -17,6 +17,9 @@ Project develop under Incremental Delivery model, the project separated into thr
 - Incremental Delivery 3
   - Email Notification
   - User Account Management
+  
+## Demonstration
+[![Demo video](http://img.youtube.com/vi/02kmcYgBoQY/0.jpg)](http://www.youtube.com/watch?v=02kmcYgBoQY "Demonstration")
 
 ## Installation and Config
 1. Database connection config, go to the web_root\model\config.php
