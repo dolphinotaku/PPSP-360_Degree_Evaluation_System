@@ -67,13 +67,21 @@ id: gd00305
 pwd: gd00305
 ```
 
+## Development Environment
+The project is not compatible in PHP7, the below is the development and testing environment.
+Tested and works on Win8, Win8.1, Win10 
+- MySQL (MariaDB 10.1.34)
+- Apache 2.4.34
+- PHP 5.6.37
+- Latest Chrome/Firefox
+
 ## Dependency - for generate individual report
-- PHP 5.4 or above
+- PHP 5.4 or above (not support PHP7, if you looking for PHP7, I am trying to update the source to support it in coming years.)
 - PHPExcel 1.8.1 (excel engine)
 - mpdf 6.1.3 (pdf engine)
 - OfficeToPdf.exe (pdf engine) [Requirement](https://officetopdf.codeplex.com/)
 
-PHPExcel has integrate with dompdf, mpdf, tcpdf, in my working environment(windows), I recommended to use mpdf as the pdf engine, OfficeToPdf.
+PHPExcel has integrate with dompdf, mpdf, tcpdf, in my working environment(windows), I recommended to use mpdf to generate the pdf, use OfficeToPdf to manipulate the pdf.
 
 > - PHPExcel - generate the report in excel with chart
 > - mpdf - for convert the excel to pdf format
